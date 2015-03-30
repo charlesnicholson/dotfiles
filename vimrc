@@ -7,17 +7,17 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 Bundle 'gmarik/Vundle.vim'
 Bundle 'Valloric/YouCompleteMe'
-Bundle 'kien/ctrlp.vim'
 Bundle 'rking/ag.vim'
 Bundle 'altercation/vim-colors-solarized'
 Bundle 'austintaylor/vim-indentobject'
 Bundle 'scrooloose/nerdtree'
-Bundle 'Lokaltog/vim-easymotion'
 Bundle 'bling/vim-airline'
 Bundle 'tpope/vim-unimpaired'
 Bundle 'moll/vim-bbye'
 Bundle 'vim-scripts/a.vim'
 Bundle 'junegunn/fzf'
+Bundle 'gtags.vim'
+Bundle 'majutsushi/tagbar'
 call vundle#end()
 filetype plugin indent on
 
@@ -85,27 +85,13 @@ autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
 vnoremap p "_dP
 
 " fzf (fuzzy completer)
-"set rtp+=/usr/local/Cellar/fzf/0.8.4
-
-" ctrlp
-nmap <leader>t :CtrlP<CR>
-nmap <leader>T :CtrlPClearCache<CR>:CtrlP<CR>
-let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+nmap <leader>t :FZF<CR>
 
 " NERDTree
 nmap <leader>d :NERDTreeToggle<CR>
 nmap <leader>f :NERDTreeFind<CR>
 let g:NERDSpaceDelims=1
 let g:ctrlp_match_window = 'order:ttb,max:20'
-
-" easymotion
-nmap <Leader> <Plug>(easymotion-prefix)
-nmap <Leader>w <Plug>(easymotion-bd-w)
-nmap <Leader>e <Plug>(easymotion-bd-e)
-
-" gitgutter
-let g:gitgutter_enabled = 1
-nmap <leader>g :GitGutterToggle<CR>
 
 " ycm
 let g:ycm_confirm_extra_conf = 0
