@@ -114,3 +114,7 @@ set noshowmode
 " YouCompleteMe
 let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py'
 
+" Semantic highlight
+let g:semanticTermColors = [28,1,2,3,4,5,6,7,25,9,10,34,12,13,14,15,125,124,19]
+let g:semanticEnableFileTypes = ["c", "python", "cpp"]
+let g:semanticBlacklistOverride = {'c': ['define', 'typedef', 'struct', 'enum', 'for', 'if', 'static', 'void']}
