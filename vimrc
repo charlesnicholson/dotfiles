@@ -24,9 +24,6 @@ filetype plugin indent on
 
 syntax enable
 set background=dark
-let g:solarized_visibility = "high"
-let g:solarized_contrast = "high"
-let g:solarized_colors = 16
 colorscheme solarized
 
 let mapleader = ","
