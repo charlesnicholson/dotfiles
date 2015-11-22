@@ -103,8 +103,28 @@ fi
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 export FZF_DEFAULT_COMMAND='ag -l -g ""'
-source ~/.fzf.zsh
-
 
 PERL_MB_OP=T"--install_base \"/Users/cnicholson/perl5\""; export PERL_MB_OPT;
 PERL_MM_OPT="INSTALL_BASE=/Users/cnicholson/perl5"; export PERL_MM_OPT;
+
+brewchown () {
+    CHOWNDIRS=("/usr/local/bin" "/usr/local/share" "/usr/local/share/man" "/usr/local/share/man/man1")
+    for d in $CHOWNDIRS; do
+        CMD="chown $USER $d"
+        owner=`ls -ld $d | awk '{print $3}'`
+        if [ "$owner" != "$USER" ]; then
+            echo 1>&2 "It's brewchown time.  Chomp, chomp ..."
+            echo 1>&2 sudo for: $CMD
+            sudo $CMD
+            break
+        fi
+    done
+}
+
+#brew () {
+ #   brewchown
+  #  `which brew` $@
+#}
+
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
