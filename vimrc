@@ -28,7 +28,6 @@ colorscheme solarized
 let mapleader = ","
 
 set mouse=a
-set ttymouse=xterm2
 set autoindent
 set autoread
 set backspace=2
