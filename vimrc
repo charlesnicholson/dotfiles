@@ -83,6 +83,9 @@ autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
 " paste doesn't yank
 vnoremap p "_dP
 
+" redraw screen clears highlighting
+nnoremap <c-l> :nohl<cr><c-l>
+
 " fzf (fuzzy completer)
 nmap <leader>t :FZF<CR>
 
