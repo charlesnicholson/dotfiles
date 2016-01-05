@@ -85,6 +85,8 @@ vnoremap p "_dP
 
 " redraw screen clears highlighting
 nnoremap <c-l> :nohl<cr><c-l>
+nnoremap j gj
+nnoremap k gk
 
 " fzf (fuzzy completer)
 nmap <leader>t :FZF<CR>
