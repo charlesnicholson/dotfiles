@@ -1,24 +1,17 @@
 set nocompatible
 
-filetype on
-
 filetype off
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-Bundle 'gmarik/Vundle.vim'
-Bundle 'Valloric/YouCompleteMe'
-Bundle 'rking/ag.vim'
-Bundle 'altercation/vim-colors-solarized'
-Bundle 'austintaylor/vim-indentobject'
-Bundle 'scrooloose/nerdtree'
-Bundle 'bling/vim-airline'
-Bundle 'tpope/vim-unimpaired'
-Bundle 'moll/vim-bbye'
-Bundle 'vim-scripts/a.vim'
-Bundle 'junegunn/fzf'
-Bundle 'gtags.vim'
-Bundle 'majutsushi/tagbar'
-call vundle#end()
+call plug#begin('~/.vim/plugged')
+Plug 'Valloric/YouCompleteMe'
+Plug 'rking/ag.vim'
+Plug 'altercation/vim-colors-solarized'
+Plug 'scrooloose/nerdtree'
+Plug 'bling/vim-airline'
+Plug 'tpope/vim-unimpaired'
+Plug 'moll/vim-bbye'
+Plug 'vim-scripts/a.vim'
+Plug 'junegunn/fzf'
+call plug#end()
 filetype plugin indent on
 
 syntax enable
@@ -27,7 +20,6 @@ colorscheme solarized
 
 let mapleader = ","
 
-set mouse=a
 set autoindent
 set autoread
 set backspace=2
@@ -69,13 +61,16 @@ set cursorline cursorcolumn
 " md files are markdown
 autocmd BufRead,BufNewFile *.md set filetype=markdown
 autocmd BufRead,BufNewFile *.md set spell
+autocmd BufRead,BufNewFile *.tex set spell
 
 " remove all trailing whitespace on save
 fun! <SID>StripTrailingWhitespaces()
+    let s=@/
     let l = line(".")
     let c = col(".")
     %s/\s\+$//e
     call cursor(l, c)
+    let @/=s
 endfun
 
 autocmd BufWritePre * :call <SID>StripTrailingWhitespaces()
@@ -109,7 +104,7 @@ set grepprg=ag\ --nogroup\ --nocolor
 " airline
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
-set noshowmode
+"set noshowmode
 
 " bbye
 :nnoremap <Leader>q :Bdelete<CR>
