@@ -1,7 +1,11 @@
 set nocompatible
 
+let g:python_host_prog='/usr/bin/python'
+
 filetype off
 call plug#begin('~/.vim/plugged')
+Plug 'luochen1990/rainbow'
+Plug 'tpope/vim-obsession'
 Plug 'Valloric/YouCompleteMe'
 Plug 'rking/ag.vim'
 Plug 'altercation/vim-colors-solarized'
@@ -116,3 +120,6 @@ let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extr
 let g:semanticTermColors = [28,1,2,3,4,5,6,7,25,9,10,34,12,13,14,15,125,124,19]
 let g:semanticEnableFileTypes = ["c", "python", "cpp"]
 let g:semanticBlacklistOverride = {'c': ['define', 'class', 'std', 'auto', 'template', 'decltype', 'typedef', 'struct', 'enum', 'for', 'if', 'static', 'void']}
+
+" Rainbow
+let g:rainbow_active = 1
