@@ -4,9 +4,9 @@ let g:python_host_prog='/usr/bin/python'
 
 filetype off
 call plug#begin('~/.vim/plugged')
+Plug 'Shougo/deoplete.nvim'
 Plug 'luochen1990/rainbow'
 Plug 'tpope/vim-obsession'
-Plug 'Valloric/YouCompleteMe'
 Plug 'rking/ag.vim'
 Plug 'altercation/vim-colors-solarized'
 Plug 'scrooloose/nerdtree'
@@ -15,6 +15,7 @@ Plug 'tpope/vim-unimpaired'
 Plug 'moll/vim-bbye'
 Plug 'vim-scripts/a.vim'
 Plug 'junegunn/fzf'
+Plug 'justinmk/vim-syntax-extra'
 call plug#end()
 filetype plugin indent on
 
@@ -113,9 +114,6 @@ let g:airline#extensions#tabline#enabled = 1
 " bbye
 :nnoremap <Leader>q :Bdelete<CR>
 
-" YouCompleteMe
-let g:ycm_global_ycm_extra_conf = '~/.vim/bundle/YouCompleteMe/cpp/ycm/.ycm_extra_conf.py'
-
 " Semantic highlight
 let g:semanticTermColors = [28,1,2,3,4,5,6,7,25,9,10,34,12,13,14,15,125,124,19]
 let g:semanticEnableFileTypes = ["c", "python", "cpp"]
@@ -123,3 +121,6 @@ let g:semanticBlacklistOverride = {'c': ['define', 'class', 'std', 'auto', 'temp
 
 " Rainbow
 let g:rainbow_active = 1
+
+" Deoplete
+let g:deoplete#enable_at_startup = 1
