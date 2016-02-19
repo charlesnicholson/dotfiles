@@ -17,6 +17,7 @@ Plug 'moll/vim-bbye'
 Plug 'vim-scripts/a.vim'
 Plug 'junegunn/fzf'
 Plug 'justinmk/vim-syntax-extra'
+Plug 'idbrii/vim-focusclip'
 call plug#end()
 filetype plugin indent on
 
