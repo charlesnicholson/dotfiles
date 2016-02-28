@@ -15,9 +15,8 @@ Plug 'bling/vim-airline'
 Plug 'tpope/vim-unimpaired'
 Plug 'moll/vim-bbye'
 Plug 'vim-scripts/a.vim'
-Plug 'junegunn/fzf'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'justinmk/vim-syntax-extra'
-Plug 'idbrii/vim-focusclip'
 call plug#end()
 filetype plugin indent on
 
