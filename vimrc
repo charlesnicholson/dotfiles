@@ -1,22 +1,23 @@
 set nocompatible
 
-let g:python_host_prog='/usr/bin/python'
-
 filetype off
 call plug#begin('~/.vim/plugged')
-Plug 'Shougo/deoplete.nvim'
+Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' }
 Plug 'luochen1990/rainbow'
-Plug 'tpope/vim-obsession'
 Plug 'rking/ag.vim'
 Plug 'altercation/vim-colors-solarized'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'scrooloose/nerdtree'
 Plug 'bling/vim-airline'
 Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-fugitive'
 Plug 'moll/vim-bbye'
 Plug 'vim-scripts/a.vim'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'justinmk/vim-syntax-extra'
+Plug 'sheerun/vim-polyglot'
+Plug 'kshenoy/vim-signature'
+Plug 'airblade/vim-gitgutter'
 call plug#end()
 filetype plugin indent on
 
@@ -98,11 +99,6 @@ nmap <leader>f :NERDTreeFind<CR>
 let g:NERDSpaceDelims=1
 let g:ctrlp_match_window = 'order:ttb,max:20'
 
-" ycm
-let g:ycm_confirm_extra_conf = 0
-let g:ycm_add_preview_to_completeopt = 0
-set completeopt-=preview
-
 " ag
 nmap <leader>a :Ag<space>
 set grepprg=ag\ --nogroup\ --nocolor
@@ -110,18 +106,23 @@ set grepprg=ag\ --nogroup\ --nocolor
 " airline
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#enabled = 1
-"set noshowmode
 
 " bbye
 :nnoremap <Leader>q :Bdelete<CR>
-
-" Semantic highlight
-let g:semanticTermColors = [28,1,2,3,4,5,6,7,25,9,10,34,12,13,14,15,125,124,19]
-let g:semanticEnableFileTypes = ["c", "python", "cpp"]
-let g:semanticBlacklistOverride = {'c': ['define', 'class', 'std', 'auto', 'template', 'decltype', 'typedef', 'struct', 'enum', 'for', 'if', 'static', 'void']}
 
 " Rainbow
 let g:rainbow_active = 1
 
 " Deoplete
 let g:deoplete#enable_at_startup = 1
+
+" color the gutter
+highlight SignColumn ctermbg=8
+
+" vim-gitgutter
+let g:gitgutter_sign_column_always = 1
+
+" youcompleteme
+nnoremap <leader>jd :YcmCompleter GoTo<CR>
+let g:ycm_confirm_extra_conf = 0
+set completeopt-=preview
