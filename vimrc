@@ -31,6 +31,7 @@ set autoindent
 set autoread
 set backspace=2
 set backupcopy=yes
+set completeopt-=preview
 set directory-=.
 set encoding=utf-8
 set expandtab
@@ -55,6 +56,10 @@ set whichwrap+=<,>,h,l,[,]
 if $TMUX == ''
     set clipboard+=unnamed
 endif
+
+" j and k walk across word-wrapped lines
+nnoremap j gj
+nnoremap k gk
 
 " cursor shapes
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
@@ -87,8 +92,6 @@ vnoremap p "_dP
 
 " redraw screen clears highlighting
 nnoremap <c-l> :nohl<cr><c-l>
-nnoremap j gj
-nnoremap k gk
 
 " fzf (fuzzy completer)
 nmap <leader>t :FZF<CR>
@@ -113,10 +116,7 @@ let g:airline#extensions#tabline#enabled = 1
 " Rainbow
 let g:rainbow_active = 1
 
-" Deoplete
-let g:deoplete#enable_at_startup = 1
-
-" color the gutter
+" color the gutter with solarized-dark
 highlight SignColumn ctermbg=8
 
 " vim-gitgutter
@@ -125,4 +125,3 @@ let g:gitgutter_sign_column_always = 1
 " youcompleteme
 nnoremap <leader>jd :YcmCompleter GoTo<CR>
 let g:ycm_confirm_extra_conf = 0
-set completeopt-=preview
