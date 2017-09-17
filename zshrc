@@ -1,6 +1,8 @@
 export ZSH=$HOME/.oh-my-zsh
 export PATH=/usr/local/gcc-arm-none-eabi-4_9-2014q4/bin:/usr/local/bin:/usr/local/sbin:$PATH
 
+fpath=(/usr/local/share/zsh-completions $fpath)
+
 ZSH_THEME="powerline"
 POWERLINE_NO_BLANK_LINE="true"
 POWERLINE_HIDE_HOST_NAME="true"
@@ -13,7 +15,6 @@ alias gs="git status"
 alias gd="git diff"
 alias v="nvim"
 alias vim="nvim"
-eval "$(thefuck --alias)"
 
 plugins=(osx brew gem git_remote_branch python tmux screen sublime)
 
@@ -25,8 +26,6 @@ for dir in \
     /bin \
     /usr/sbin \
     /usr/local/git/bin \
-    /usr/local/gcc-4.8.0-qt-4.8.4-for-mingw32/win32-gcc/bin \
-    ~/bin
 ; do
   if [[ -d $dir ]]; then path+=$dir; fi
 done
