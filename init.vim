@@ -2,7 +2,7 @@ set nocompatible
 
 let atgoogle = isdirectory("/usr/share/vim/google")
 if atgoogle
-    source google.vim
+    source ~/.config/nvim/google.vim
 endif
 
 call plug#begin('~/.local/share/nvim/plugged')
