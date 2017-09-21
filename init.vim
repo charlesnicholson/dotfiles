@@ -191,3 +191,9 @@ fun! LaptopLayout()
   stopinsert
 endfun
 command! -register LaptopLayout call LaptopLayout()
+
+fun! FocusEditWindow(editWindowID)
+  let l:windowID = a:editWindowID + 2
+  exec(l:windowID . "wincmd w")
+endfun
+command! -register FocusEditWindow call FocusEditWindow(0)
