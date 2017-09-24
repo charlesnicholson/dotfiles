@@ -8,6 +8,7 @@ endif
 call plug#begin('~/.local/share/nvim/plugged')
 if (!atgoogle)
     Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' }
+    Plug 'rhysd/vim-clang-format'
 endif
 Plug 'luochen1990/rainbow'
 Plug 'mileszs/ack.vim'
@@ -110,12 +111,12 @@ au BufRead,BufNewFile *.tex set spell
 
 " remove all trailing whitespace on save
 fun! <SID>StripTrailingWhitespaces()
-    let s=@/
-    let l = line(".")
-    let c = col(".")
-    %s/\s\+$//e
-    call cursor(l, c)
-    let @/=s
+  let s=@/
+  let l = line(".")
+  let c = col(".")
+  %s/\s\+$//e
+  call cursor(l, c)
+  let @/=s
 endfun
 au BufWritePre * :call <SID>StripTrailingWhitespaces()
 
@@ -157,11 +158,17 @@ highlight SignColumn ctermbg=8
 nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
 let g:ycm_confirm_extra_conf = 0
 if !exists("g:ycm_semantic_triggers")
-   let g:ycm_semantic_triggers = {}
+  let g:ycm_semantic_triggers = {}
 endif
 let g:ycm_semantic_triggers['typescript'] = ['.']
 let g:ycm_autoclose_preview_window_after_completion = 1
 let g:ycm_autoclose_preview_window_after_insertion = 1
+
+" clang-format-vim
+if (!atgoogle)
+  let g:clang_format#code_style = 'google'
+  autocmd FileType c,cpp ClangFormatAutoEnable
+endif
 
 fun! DesktopLayout()
   vsp " code 2
