@@ -2,7 +2,7 @@ set nocompatible
 
 let atgoogle = isdirectory("/usr/share/vim/google")
 if atgoogle
-    source google.vim
+    source ~/.config/nvim/google.vim
 endif
 
 call plug#begin('~/.local/share/nvim/plugged')
@@ -198,3 +198,9 @@ fun! LaptopLayout()
   stopinsert
 endfun
 command! -register LaptopLayout call LaptopLayout()
+
+fun! FocusEditWindow(editWindowID)
+  let l:windowID = a:editWindowID + 2
+  exec(l:windowID . "wincmd w")
+endfun
+command! -register FocusEditWindow call FocusEditWindow(0)
