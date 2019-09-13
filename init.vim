@@ -49,7 +49,6 @@ set autoindent
 set autoread
 set backspace=indent,eol,start
 set visualbell
-set backup
 set clipboard=unnamed
 set directory-=.
 set encoding=utf-8
@@ -200,7 +199,7 @@ fun! LaptopLayout()
   terminal
   NERDTree
   wincmd l " code 1
-  vertical resize 90
+  vertical resize 110
   stopinsert
 endfun
 command! -register LaptopLayout call LaptopLayout()

@@ -3,11 +3,10 @@ export PATH=/usr/local/gcc-arm-none-eabi-4_9-2014q4/bin:/usr/local/bin:/usr/loca
 
 fpath=(/usr/local/share/zsh-completions $fpath)
 
-#ZSH_THEME="powerline"
-#POWERLINE_NO_BLANK_LINE="true"
-#POWERLINE_HIDE_HOST_NAME="true"
-#POWERLINE_HIDE_USER_NAME="true"
-ZSH_THEME="robbyrussell"
+ZSH_THEME="powerline"
+POWERLINE_NO_BLANK_LINE="true"
+POWERLINE_HIDE_HOST_NAME="true"
+POWERLINE_HIDE_USER_NAME="true"
 
 DEFAULT_USER=cnicholson
 
