@@ -31,6 +31,7 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'sheerun/vim-polyglot'
 Plug 'kshenoy/vim-signature'
 Plug 'airblade/vim-gitgutter'
+Plug 'https://gn.googlesource.com/gn', { 'rtp': 'tools/gn/misc/vim' }
 call plug#end()
 
 filetype plugin indent on
@@ -53,6 +54,7 @@ set clipboard=unnamed
 set directory-=.
 set encoding=utf-8
 set expandtab
+set hidden
 set ignorecase
 set incsearch
 set laststatus=2
@@ -199,7 +201,7 @@ fun! LaptopLayout()
   terminal
   NERDTree
   wincmd l " code 1
-  vertical resize 110
+  vertical resize 90
   stopinsert
 endfun
 command! -register LaptopLayout call LaptopLayout()

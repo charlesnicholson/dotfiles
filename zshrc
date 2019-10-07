@@ -1,5 +1,5 @@
 export ZSH=$HOME/.oh-my-zsh
-export PATH=/usr/local/gcc-arm-none-eabi-4_9-2014q4/bin:/usr/local/bin:/usr/local/sbin:$PATH
+export PATH=/usr/local/bin:/usr/local/sbin:$PATH
 
 fpath=(/usr/local/share/zsh-completions $fpath)
 
