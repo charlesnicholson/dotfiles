@@ -26,10 +26,11 @@ for dir in \
   if [[ -d $dir ]]; then path+=$dir; fi
 done
 
+eval "$(rbenv init -)"
+
 source $ZSH/oh-my-zsh.sh
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden'
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-eval "$(rbenv init -)"
