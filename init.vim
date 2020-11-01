@@ -1,10 +1,5 @@
 set nocompatible
 
-let atgoogle = isdirectory("/usr/share/vim/google")
-if atgoogle
-    source ~/.config/nvim/google.vim
-endif
-
 if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
   silent !curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -12,26 +7,26 @@ if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.local/share/nvim/plugged')
-if (!atgoogle)
-    Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clang-completer' }
-    Plug 'rhysd/vim-clang-format'
-endif
+"Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clangd-completer' }
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'yuki-ycino/fzf-preview.vim', { 'branch': 'release', 'do': ':UpdateRemotePlugins' }
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'https://gn.googlesource.com/gn', { 'rtp': 'tools/gn/misc/vim' }
+Plug 'rhysd/vim-clang-format'
+Plug 'ryanoasis/vim-devicons'
 Plug 'luochen1990/rainbow'
 Plug 'mileszs/ack.vim'
 Plug 'altercation/vim-colors-solarized'
-Plug 'vim-airline/vim-airline-themes'
 Plug 'bling/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive'
 Plug 'moll/vim-bbye'
-Plug 'vim-scripts/a.vim'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'sheerun/vim-polyglot'
 Plug 'kshenoy/vim-signature'
 Plug 'airblade/vim-gitgutter'
-Plug 'https://gn.googlesource.com/gn', { 'rtp': 'tools/gn/misc/vim' }
 call plug#end()
 
 filetype plugin indent on
@@ -65,6 +60,7 @@ set number
 set ruler
 set scrolloff=3
 set shiftwidth=4
+set signcolumn=yes
 set splitbelow splitright
 set showcmd
 set smartcase
@@ -77,6 +73,9 @@ set wildmode=longest,list,full
 set whichwrap+=<,>,h,l,[,]
 set inccommand=nosplit
 set lazyredraw
+
+" color the gutter with solarized-dark
+highlight SignColumn ctermbg=8
 
 au Filetype typescript setlocal ts=2 sw=2 expandtab
 
@@ -133,18 +132,37 @@ noremap x "_x
 " escape clears highlighting and re-renders syntax highlighting
 nnoremap <silent> <Esc> :noh<CR>:syntax sync fromstart<CR><Esc>
 
+" fzf-preview
+nmap <Leader>f [fzf-p]
+xmap <Leader>f [fzf-p]
+
+nnoremap <silent> [fzf-p]p     :<C-u>FzfPreviewFromResources project_mru git<CR>
+nnoremap <silent> [fzf-p]gs    :<C-u>FzfPreviewGitStatus<CR>
+nnoremap <silent> [fzf-p]ga    :<C-u>FzfPreviewGitActions<CR>
+nnoremap <silent> [fzf-p]b     :<C-u>FzfPreviewBuffers<CR>
+nnoremap <silent> [fzf-p]B     :<C-u>FzfPreviewAllBuffers<CR>
+nnoremap <silent> [fzf-p]o     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
+nnoremap <silent> [fzf-p]<C-o> :<C-u>FzfPreviewJumps<CR>
+nnoremap <silent> [fzf-p]g;    :<C-u>FzfPreviewChanges<CR>
+nnoremap <silent> [fzf-p]/     :<C-u>FzfPreviewLines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'"<CR>
+nnoremap <silent> [fzf-p]*     :<C-u>FzfPreviewLines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+nnoremap          [fzf-p]gr    :<C-u>FzfPreviewProjectGrep<Space>
+xnoremap          [fzf-p]gr    "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+nnoremap <silent> [fzf-p]t     :<C-u>FzfPreviewBufferTags<CR>
+nnoremap <silent> [fzf-p]q     :<C-u>FzfPreviewQuickFix<CR>
+nnoremap <silent> [fzf-p]l     :<C-u>FzfPreviewLocationList<CR>
+
 " fzf (fuzzy completer)
 nmap <leader>t :FZF<CR>
 
 " NERDTree
-nmap <leader>d :NERDTreeToggle<CR>
-nmap <leader>f :NERDTreeFind<CR>
+nmap <leader>ntt :NERDTreeToggle<CR>
+nmap <leader>ntf :NERDTreeFind<CR>
 let g:NERDSpaceDelims=1
-let g:ctrlp_match_window = 'order:ttb,max:20'
 
 " ack
 nmap <leader>a :Ack<space>
-let g:ackprg = 'ag --vimgrep --smart-case'
+let g:ackprg = 'rg --vimgrep --no-heading'
 
 " airline
 let g:airline_powerline_fonts = 1
@@ -156,26 +174,19 @@ let g:airline#extensions#tabline#enabled = 1
 " Rainbow
 let g:rainbow_active = 1
 
-" vim-gitgutter
-set signcolumn=yes
-" color the gutter with solarized-dark
-highlight SignColumn ctermbg=8
-
 " youcompleteme
-nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
-let g:ycm_confirm_extra_conf = 0
-if !exists("g:ycm_semantic_triggers")
-  let g:ycm_semantic_triggers = {}
-endif
-let g:ycm_semantic_triggers['typescript'] = ['.']
-let g:ycm_autoclose_preview_window_after_completion = 1
-let g:ycm_autoclose_preview_window_after_insertion = 1
+"nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
+"let g:ycm_confirm_extra_conf = 0
+"if !exists("g:ycm_semantic_triggers")
+"  let g:ycm_semantic_triggers = {}
+"endif
+"let g:ycm_semantic_triggers['typescript'] = ['.']
+"let g:ycm_autoclose_preview_window_after_completion = 1
+"let g:ycm_autoclose_preview_window_after_insertion = 1
 
 " clang-format-vim
-if (!atgoogle)
-  let g:clang_format#code_style = 'google'
-  autocmd FileType c,cpp ClangFormatAutoEnable
-endif
+let g:clang_format#code_style = 'google'
+autocmd FileType c,cpp ClangFormatAutoEnable
 
 fun! DesktopLayout()
   vsp " code 2
