@@ -44,15 +44,16 @@ let mapleader = ","
 set autoindent
 set autoread
 set backspace=indent,eol,start
-set visualbell
 set clipboard=unnamed
 set directory-=.
 set encoding=utf-8
 set expandtab
 set hidden
 set ignorecase
+set inccommand=nosplit
 set incsearch
 set laststatus=2
+set lazyredraw
 set list
 set listchars=tab:▸\ ,trail:▫
 set relativenumber
@@ -60,19 +61,19 @@ set number
 set ruler
 set scrolloff=3
 set shiftwidth=4
-set signcolumn=yes
-set splitbelow splitright
 set showcmd
+set signcolumn=yes
 set smartcase
-set undofile
 set softtabstop=4
+set splitbelow splitright
 set tabstop=4
+set undofile
+set updatetime=300
+set visualbell
 set wildignore=log/**,node_modules/**,target/**,tmp/**
 set wildmenu
 set wildmode=longest,list,full
 set whichwrap+=<,>,h,l,[,]
-set inccommand=nosplit
-set lazyredraw
 
 " color the gutter with solarized-dark
 highlight SignColumn ctermbg=8
@@ -131,6 +132,27 @@ noremap x "_x
 
 " escape clears highlighting and re-renders syntax highlighting
 nnoremap <silent> <Esc> :noh<CR>:syntax sync fromstart<CR><Esc>
+
+" coc
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+inoremap <silent><expr> <c-space> coc#refresh()
+
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " fzf-preview
 nmap <Leader>f [fzf-p]
