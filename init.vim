@@ -15,7 +15,6 @@ Plug 'https://gn.googlesource.com/gn', { 'rtp': 'tools/gn/misc/vim' }
 Plug 'rhysd/vim-clang-format'
 Plug 'ryanoasis/vim-devicons'
 Plug 'luochen1990/rainbow'
-Plug 'mileszs/ack.vim'
 Plug 'altercation/vim-colors-solarized'
 Plug 'bling/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -158,11 +157,12 @@ set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 nmap <Leader>f [fzf-p]
 xmap <Leader>f [fzf-p]
 
+nnoremap <silent> [fzf-p]B     :<C-u>FzfPreviewAllBuffers<CR>
+nnoremap <silent> [fzf-p]b     :<C-u>FzfPreviewBuffers<CR>
 nnoremap <silent> [fzf-p]p     :<C-u>FzfPreviewFromResources project_mru git<CR>
+nnoremap <silent> [fzf-p]gf    :<C-u>FzfPreviewGitFiles<CR>
 nnoremap <silent> [fzf-p]gs    :<C-u>FzfPreviewGitStatus<CR>
 nnoremap <silent> [fzf-p]ga    :<C-u>FzfPreviewGitActions<CR>
-nnoremap <silent> [fzf-p]b     :<C-u>FzfPreviewBuffers<CR>
-nnoremap <silent> [fzf-p]B     :<C-u>FzfPreviewAllBuffers<CR>
 nnoremap <silent> [fzf-p]o     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
 nnoremap <silent> [fzf-p]<C-o> :<C-u>FzfPreviewJumps<CR>
 nnoremap <silent> [fzf-p]g;    :<C-u>FzfPreviewChanges<CR>
@@ -181,10 +181,6 @@ nmap <leader>t :FZF<CR>
 nmap <leader>ntt :NERDTreeToggle<CR>
 nmap <leader>ntf :NERDTreeFind<CR>
 let g:NERDSpaceDelims=1
-
-" ack
-nmap <leader>a :Ack<space>
-let g:ackprg = 'rg --vimgrep --no-heading'
 
 " airline
 let g:airline_powerline_fonts = 1
