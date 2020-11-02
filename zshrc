@@ -1,4 +1,6 @@
 export ZSH=$HOME/.oh-my-zsh
+export NPM_PACKAGES=$HOME/.npm-packages
+export NODE_PATH="$NPM_PACKAGES/lib/node_modules:$NODE_PATH"
 
 fpath=(/usr/local/share/zsh-completions $fpath)
 
@@ -22,6 +24,7 @@ for dir in \
     /usr/local/sbin \
     /usr/local/git/bin \
     ~/.gem/ruby/2.7.0/bin \
+    $NPM_PACKAGES/bin \
 ; do
   if [[ -d $dir ]]; then path+=$dir; fi
 done
