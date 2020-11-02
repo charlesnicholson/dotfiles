@@ -2,20 +2,6 @@ export ZSH=$HOME/.oh-my-zsh
 export NPM_PACKAGES=$HOME/.npm-packages
 export NODE_PATH="$NPM_PACKAGES/lib/node_modules:$NODE_PATH"
 
-fpath=(/usr/local/share/zsh-completions $fpath)
-
-ZSH_THEME="powerline"
-POWERLINE_NO_BLANK_LINE="true"
-POWERLINE_HIDE_HOST_NAME="true"
-POWERLINE_HIDE_USER_NAME="true"
-
-alias gps="git pull && git submodule update --init --recursive"
-alias gs="git status"
-alias gd="git diff"
-
-plugins=(osx brew fzf gem python screen sublime)
-
-
 for dir in \
     /bin \
     /usr/bin \
@@ -31,6 +17,17 @@ done
 
 eval "$(rbenv init -)"
 
+plugins=(osx brew fzf git gem python screen sublime)
+fpath=(/usr/local/share/zsh-completions $fpath)
+
+alias gps="git pull && git submodule update --init --recursive"
+alias gs="git status"
+alias gd="git diff"
+
+ZSH_THEME="powerline"
+POWERLINE_NO_BLANK_LINE="true"
+POWERLINE_HIDE_HOST_NAME="true"
+POWERLINE_HIDE_USER_NAME="true"
 source $ZSH/oh-my-zsh.sh
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
