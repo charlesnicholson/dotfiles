@@ -7,11 +7,10 @@ if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.local/share/nvim/plugged')
-"Plug 'Valloric/YouCompleteMe', { 'do': './install.py --clangd-completer' }
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'yuki-ycino/fzf-preview.vim', { 'branch': 'release', 'do': ':UpdateRemotePlugins' }
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'https://gn.googlesource.com/gn', { 'rtp': 'tools/gn/misc/vim' }
+Plug 'https://gn.googlesource.com/gn', { 'rtp': 'misc/vim' }
 Plug 'rhysd/vim-clang-format'
 Plug 'ryanoasis/vim-devicons'
 Plug 'luochen1990/rainbow'
@@ -133,6 +132,17 @@ noremap x "_x
 nnoremap <silent> <Esc> :noh<CR>:syntax sync fromstart<CR><Esc>
 
 " coc
+
+let g:coc_global_extensions = [
+    \'coc-tsserver',
+    \'coc-json',
+    \'coc-python',
+    \'coc-sh',
+    \'coc-html',
+    \'coc-css',
+    \'coc-markdownlint'
+    \]
+
 function! s:check_back_space() abort
   let col = col('.') - 1
   return !col || getline('.')[col - 1]  =~# '\s'
