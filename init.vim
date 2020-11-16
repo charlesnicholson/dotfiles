@@ -21,6 +21,7 @@ Plug 'scrooloose/nerdtree'
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-vinegar'
 Plug 'moll/vim-bbye'
 Plug 'sheerun/vim-polyglot'
 Plug 'kshenoy/vim-signature'
@@ -140,7 +141,8 @@ let g:coc_global_extensions = [
     \'coc-sh',
     \'coc-html',
     \'coc-css',
-    \'coc-markdownlint'
+    \'coc-markdownlint',
+    \'coc-yaml'
     \]
 
 function! s:check_back_space() abort
@@ -167,22 +169,28 @@ set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 nmap <Leader>f [fzf-p]
 xmap <Leader>f [fzf-p]
 
-nnoremap <silent> [fzf-p]B     :<C-u>FzfPreviewAllBuffers<CR>
-nnoremap <silent> [fzf-p]b     :<C-u>FzfPreviewBuffers<CR>
-nnoremap <silent> [fzf-p]p     :<C-u>FzfPreviewFromResources project_mru git<CR>
-nnoremap <silent> [fzf-p]gf    :<C-u>FzfPreviewGitFiles<CR>
-nnoremap <silent> [fzf-p]gs    :<C-u>FzfPreviewGitStatus<CR>
-nnoremap <silent> [fzf-p]ga    :<C-u>FzfPreviewGitActions<CR>
-nnoremap <silent> [fzf-p]o     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
-nnoremap <silent> [fzf-p]<C-o> :<C-u>FzfPreviewJumps<CR>
-nnoremap <silent> [fzf-p]g;    :<C-u>FzfPreviewChanges<CR>
-nnoremap <silent> [fzf-p]/     :<C-u>FzfPreviewLines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'"<CR>
-nnoremap <silent> [fzf-p]*     :<C-u>FzfPreviewLines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
-nnoremap          [fzf-p]gr    :<C-u>FzfPreviewProjectGrep<Space>
-xnoremap          [fzf-p]gr    "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-nnoremap <silent> [fzf-p]t     :<C-u>FzfPreviewBufferTags<CR>
-nnoremap <silent> [fzf-p]q     :<C-u>FzfPreviewQuickFix<CR>
-nnoremap <silent> [fzf-p]l     :<C-u>FzfPreviewLocationList<CR>
+nnoremap <silent> [fzf-p]d      :<C-u>FzfPreviewDirectoryFiles<CR>
+nnoremap <silent> [fzf-p]p      :<C-u>FzfPreviewProjectFiles<CR>
+nnoremap <silent> [fzf-p]g      :<C-u>FzfPreviewGitFiles<CR>
+nnoremap <silent> [fzf-p]b      :<C-u>FzfPreviewBuffers<CR>
+nnoremap          <Leader>a     :<C-u>FzfPreviewProjectGrep<Space>
+xnoremap          <Leader>a     "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+"nnoremap <silent> [fzf-p]B     :<C-u>FzfPreviewAllBuffers<CR>
+"nnoremap <silent> [fzf-p]b     :<C-u>FzfPreviewBuffers<CR>
+"nnoremap <silent> [fzf-p]p     :<C-u>FzfPreviewFromResources project_mru git<CR>
+"nnoremap <silent> [fzf-p]gf    :<C-u>FzfPreviewGitFiles<CR>
+"nnoremap <silent> [fzf-p]gs    :<C-u>FzfPreviewGitStatus<CR>
+"nnoremap <silent> [fzf-p]ga    :<C-u>FzfPreviewGitActions<CR>
+"nnoremap <silent> [fzf-p]o     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
+"nnoremap <silent> [fzf-p]<C-o> :<C-u>FzfPreviewJumps<CR>
+"nnoremap <silent> [fzf-p]g;    :<C-u>FzfPreviewChanges<CR>
+"nnoremap <silent> [fzf-p]/     :<C-u>FzfPreviewLines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'"<CR>
+"nnoremap <silent> [fzf-p]*     :<C-u>FzfPreviewLines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
+"nnoremap          [fzf-p]gr    :<C-u>FzfPreviewProjectGrep<Space>
+"xnoremap          [fzf-p]gr    "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
+"nnoremap <silent> [fzf-p]t     :<C-u>FzfPreviewBufferTags<CR>
+"nnoremap <silent> [fzf-p]q     :<C-u>FzfPreviewQuickFix<CR>
+"nnoremap <silent> [fzf-p]l     :<C-u>FzfPreviewLocationList<CR>
 
 " fzf (fuzzy completer)
 nmap <leader>t :FZF<CR>
@@ -202,20 +210,6 @@ let g:airline#extensions#tabline#enabled = 1
 " Rainbow
 let g:rainbow_active = 1
 
-" youcompleteme
-"nnoremap <leader>jd :YcmCompleter GoToDefinition<CR>
-"let g:ycm_confirm_extra_conf = 0
-"if !exists("g:ycm_semantic_triggers")
-"  let g:ycm_semantic_triggers = {}
-"endif
-"let g:ycm_semantic_triggers['typescript'] = ['.']
-"let g:ycm_autoclose_preview_window_after_completion = 1
-"let g:ycm_autoclose_preview_window_after_insertion = 1
-
-" clang-format-vim
-let g:clang_format#code_style = 'google'
-autocmd FileType c,cpp ClangFormatAutoEnable
-
 fun! DesktopLayout()
   vsp " code 2
   vsp " terminal 1
@@ -226,9 +220,9 @@ fun! DesktopLayout()
   terminal
   NERDTree
   wincmd l " code 1
-  vertical resize 90
+  vertical resize 100
   wincmd l " code 2
-  vertical resize 90
+  vertical resize 100
   stopinsert
 endfun
 command! -register DesktopLayout call DesktopLayout()
