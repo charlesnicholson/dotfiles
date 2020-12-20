@@ -26,6 +26,7 @@ Plug 'moll/vim-bbye'
 Plug 'sheerun/vim-polyglot'
 Plug 'kshenoy/vim-signature'
 Plug 'airblade/vim-gitgutter'
+Plug 'jiangmiao/auto-pairs'
 call plug#end()
 
 filetype plugin indent on
@@ -142,7 +143,8 @@ let g:coc_global_extensions = [
     \'coc-html',
     \'coc-css',
     \'coc-markdownlint',
-    \'coc-yaml'
+    \'coc-yaml',
+    \'coc-rls',
     \]
 
 function! s:check_back_space() abort
