@@ -9,7 +9,6 @@ for dir in \
     /usr/local/bin \
     /usr/local/sbin \
     /usr/local/git/bin \
-    ~/.gem/ruby/2.7.0/bin \
     $NPM_PACKAGES/bin \
 ; do
   if [[ -d $dir ]]; then path+=$dir; fi
