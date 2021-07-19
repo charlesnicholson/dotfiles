@@ -6,6 +6,7 @@ if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
+
 call plug#begin('~/.local/share/nvim/plugged')
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'yuki-ycino/fzf-preview.vim', { 'branch': 'release/remote', 'do': ':UpdateRemotePlugins' }
@@ -23,7 +24,7 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-vinegar'
 Plug 'moll/vim-bbye'
-Plug 'sheerun/vim-polyglot'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'kshenoy/vim-signature'
 Plug 'airblade/vim-gitgutter'
 call plug#end()
@@ -131,6 +132,38 @@ noremap x "_x
 
 " escape clears highlighting and re-renders syntax highlighting
 nnoremap <silent> <Esc> :noh<CR>:syntax sync fromstart<CR><Esc>
+
+" treesitter
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  highlight = {
+    enable = true,
+    disable = {},
+  },
+  indent = {
+    enable = false,
+    disable = {},
+  },
+  ensure_installed = {
+    "bash",
+    "c",
+    "cmake",
+    "cpp",
+    "dockerfile",
+    "graphql",
+    "html",
+    "javascript",
+    "json",
+    "jsonc",
+    "lua",
+    "python",
+    "scss",
+    "typescript",
+    "yaml",
+    "zig",
+  },
+}
+EOF
 
 " coc
 
