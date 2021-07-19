@@ -26,7 +26,6 @@ Plug 'moll/vim-bbye'
 Plug 'sheerun/vim-polyglot'
 Plug 'kshenoy/vim-signature'
 Plug 'airblade/vim-gitgutter'
-Plug 'jiangmiao/auto-pairs'
 call plug#end()
 
 filetype plugin indent on
