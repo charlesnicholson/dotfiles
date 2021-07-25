@@ -188,6 +188,7 @@ lua <<EOF
 local required_servers = {
   "bash",
   "cpp",
+  "graphql",
   "html",
   "lua",
   "python",
@@ -209,6 +210,7 @@ lua <<EOF
 lsp_cfg = require('lspconfig')
 lsp_cfg.bashls.setup{}
 --lsp_cfg.clangd.setup{}
+lsp_cfg.graphql.setup{}
 lsp_cfg.html.setup{}
 lsp_cfg.jsonls.setup{}
 lsp_cfg.pyright.setup{}
