@@ -6,28 +6,44 @@ if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
-
 call plug#begin('~/.local/share/nvim/plugged')
+Plug 'nvim-lua/plenary.nvim'
+
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'yuki-ycino/fzf-preview.vim', { 'branch': 'release/remote', 'do': ':UpdateRemotePlugins' }
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'https://gn.googlesource.com/gn', { 'rtp': 'misc/vim' }
-Plug 'rhysd/vim-clang-format'
+
 Plug 'ryanoasis/vim-devicons'
-Plug 'luochen1990/rainbow'
 Plug 'altercation/vim-colors-solarized'
 Plug 'bling/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
-Plug 'scrooloose/nerdtree'
+
 Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-vinegar'
 Plug 'moll/vim-bbye'
+
+Plug 'neovim/nvim-lspconfig'
+Plug 'kabouzeid/nvim-lspinstall'
+
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+
+"Plug 'hrsh7th/nvim-compe'
+
+Plug 'nvim-lua/completion-nvim'
+Plug 'steelsojka/completion-buffers'
+Plug 'nvim-treesitter/completion-treesitter'
+Plug 'https://gn.googlesource.com/gn', { 'rtp': 'misc/vim' }
+
+Plug 'glepnir/lspsaga.nvim'
+
+Plug 'scrooloose/nerdtree'
+Plug 'luochen1990/rainbow'
 Plug 'kshenoy/vim-signature'
 Plug 'airblade/vim-gitgutter'
 call plug#end()
+
+let mapleader = ","
 
 filetype plugin indent on
 syntax enable
@@ -39,12 +55,12 @@ endif
 
 set background=dark
 colorscheme solarized
-let mapleader = ","
 
 set autoindent
 set autoread
 set backspace=indent,eol,start
 set clipboard=unnamed
+set completeopt=menuone,noinsert,noselect
 set directory-=.
 set encoding=utf-8
 set expandtab
@@ -61,6 +77,7 @@ set number
 set ruler
 set scrolloff=3
 set shiftwidth=4
+set shortmess+=c
 set showcmd
 set signcolumn=yes
 set smartcase
@@ -74,6 +91,10 @@ set wildignore=log/**,node_modules/**,target/**,tmp/**
 set wildmenu
 set wildmode=longest,list,full
 set whichwrap+=<,>,h,l,[,]
+
+" Use <Tab> and <S-Tab> to navigate through completion popup menu
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 " color the gutter with solarized-dark
 highlight SignColumn ctermbg=8
@@ -95,6 +116,9 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
+
+" escape clears highlighting
+nnoremap <silent> <Esc> :noh<CR><Esc>
 
 " cursor shapes
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
@@ -130,9 +154,6 @@ au BufWritePre * :call <SID>StripTrailingWhitespaces()
 vnoremap p "_dP
 noremap x "_x
 
-" escape clears highlighting and re-renders syntax highlighting
-nnoremap <silent> <Esc> :noh<CR>:syntax sync fromstart<CR><Esc>
-
 " treesitter
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
@@ -140,10 +161,12 @@ require'nvim-treesitter.configs'.setup {
     enable = true,
     disable = {},
   },
+
   indent = {
     enable = false,
     disable = {},
   },
+
   ensure_installed = {
     "bash",
     "c",
@@ -165,39 +188,84 @@ require'nvim-treesitter.configs'.setup {
 }
 EOF
 
-" coc
+" nvim-lspinstall
+lua <<EOF
+local required_servers = {
+  "bash",
+  "cpp",
+  "html",
+  "lua",
+  "python",
+  "typescript",
+  "vim",
+  "yaml",
+}
 
-let g:coc_global_extensions = [
-    \'coc-tsserver',
-    \'coc-json',
-    \'coc-python',
-    \'coc-sh',
-    \'coc-html',
-    \'coc-css',
-    \'coc-markdownlint',
-    \'coc-yaml',
-    \'coc-rls',
-    \]
+local installed_servers = require'lspinstall'.installed_servers()
+for _, server in pairs(required_servers) do
+  if not vim.tbl_contains(installed_servers, server) then
+    require'lspinstall'.install_server(server)
+  end
+end
 
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
+function setup_lspservers()
+  require'lspinstall'.setup()
+  local servers = require'lspinstall'.installed_servers()
+  for _, server in pairs(servers) do
+    require'lspconfig'[server].setup{}
+  end
+end
 
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+setup_lspservers()
 
-inoremap <silent><expr> <c-space> coc#refresh()
+require'lspinstall'.post_install_hook = function ()
+  setup_servers()
+  vim.cmd("bufdo e")
+end
+EOF
 
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+" lspconfig
+lua <<EOF
+lsp_cfg = require('lspconfig')
+lsp_cfg.bashls.setup{}
+--lsp_cfg.clangd.setup{}
+lsp_cfg.html.setup{}
+lsp_cfg.jsonls.setup{}
+lsp_cfg.pyright.setup{}
+lsp_cfg.tsserver.setup{}
+lsp_cfg.vimls.setup{}
+lsp_cfg.yamlls.setup{}
+EOF
 
-autocmd CursorHold * silent call CocActionAsync('highlight')
+" lsp general
+lua <<EOF
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+  vim.lsp.diagnostic.on_publish_diagnostics, {
+    update_in_insert = true,
+  }
+)
+EOF
 
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+" nvim-lua/completion
+
+lua <<EOF
+vim.g.completion_chain_complete_list = {
+  default = {
+    { complete_items = { 'lsp', 'ts', 'buffers' } },
+    { mode = { '<c-p>' } },
+    { mode = { '<c-n>' } }
+  },
+}
+EOF
+
+autocmd BufEnter * lua require'completion'.on_attach()
+imap <tab> <Plug>(completion_smart_tab)
+imap <s-tab> <Plug>(completion_smart_s_tab)
+
+" lspsaga
+lua <<EOF
+require'lspsaga'.init_lsp_saga{}
+EOF
 
 " fzf-preview
 nmap <Leader>f [fzf-p]
