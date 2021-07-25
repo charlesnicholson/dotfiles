@@ -231,9 +231,11 @@ let g:compe = {}
 let g:compe.enabled = v:true
 let g:compe.source = {
   \ 'nvim_lsp': v:true,
+  \ 'treesitter': v:true,
   \ 'path': v:true,
   \ 'buffer': v:true,
   \ 'ultisnips': v:true,
+  \ 'calc': v:true,
   \ }
 
 " lspsaga
