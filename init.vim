@@ -27,14 +27,9 @@ Plug 'neovim/nvim-lspconfig'
 Plug 'kabouzeid/nvim-lspinstall'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-
-"Plug 'hrsh7th/nvim-compe'
-
-Plug 'nvim-lua/completion-nvim'
-Plug 'steelsojka/completion-buffers'
-Plug 'nvim-treesitter/completion-treesitter'
 Plug 'https://gn.googlesource.com/gn', { 'rtp': 'misc/vim' }
 
+Plug 'hrsh7th/nvim-compe'
 Plug 'glepnir/lspsaga.nvim'
 
 Plug 'scrooloose/nerdtree'
@@ -246,21 +241,15 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 )
 EOF
 
-" nvim-lua/completion
-
-lua <<EOF
-vim.g.completion_chain_complete_list = {
-  default = {
-    { complete_items = { 'lsp', 'ts', 'buffers' } },
-    { mode = { '<c-p>' } },
-    { mode = { '<c-n>' } }
-  },
-}
-EOF
-
-autocmd BufEnter * lua require'completion'.on_attach()
-imap <tab> <Plug>(completion_smart_tab)
-imap <s-tab> <Plug>(completion_smart_s_tab)
+" nvim-compe
+let g:compe = {}
+let g:compe.enabled = v:true
+let g:compe.source = {
+  \ 'nvim_lsp': v:true,
+  \ 'path': v:true,
+  \ 'buffer': v:true,
+  \ 'ultisnips': v:true,
+  \ }
 
 " lspsaga
 lua <<EOF
