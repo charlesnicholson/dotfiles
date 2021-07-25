@@ -202,21 +202,6 @@ for _, server in pairs(required_servers) do
     require'lspinstall'.install_server(server)
   end
 end
-
-function setup_lspservers()
-  require'lspinstall'.setup()
-  local servers = require'lspinstall'.installed_servers()
-  for _, server in pairs(servers) do
-    require'lspconfig'[server].setup{}
-  end
-end
-
-setup_lspservers()
-
-require'lspinstall'.post_install_hook = function ()
-  setup_servers()
-  vim.cmd("bufdo e")
-end
 EOF
 
 " lspconfig
