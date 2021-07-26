@@ -77,6 +77,7 @@ set showcmd
 set signcolumn=yes
 set smartcase
 set softtabstop=4
+set spelllang=en
 set splitbelow splitright
 set tabstop=4
 set undofile
@@ -187,9 +188,12 @@ EOF
 lua <<EOF
 local required_servers = {
   "bash",
+  "cmake",
   "cpp",
+  "dockerfile",
   "graphql",
   "html",
+  "json",
   "lua",
   "python",
   "typescript",
@@ -210,6 +214,8 @@ lua <<EOF
 lsp_cfg = require('lspconfig')
 lsp_cfg.bashls.setup{}
 --lsp_cfg.clangd.setup{}
+lsp_cfg.cmake.setup{}
+lsp_cfg.dockerls.setup{}
 lsp_cfg.graphql.setup{}
 lsp_cfg.html.setup{}
 lsp_cfg.jsonls.setup{}
@@ -240,19 +246,21 @@ let g:compe.source = {
   \ 'calc': v:true,
   \ }
 
+inoremap <silent><expr> <C-Space> compe#complete()
+
 " lspsaga
 lua <<EOF
 require'lspsaga'.init_lsp_saga{}
 EOF
 
 " fzf-preview
-nmap <Leader>f [fzf-p]
-xmap <Leader>f [fzf-p]
-
-nnoremap <silent> [fzf-p]d      :<C-u>FzfPreviewDirectoryFiles<CR>
-nnoremap <silent> [fzf-p]p      :<C-u>FzfPreviewProjectFiles<CR>
-nnoremap <silent> [fzf-p]g      :<C-u>FzfPreviewGitFiles<CR>
-nnoremap <silent> [fzf-p]b      :<C-u>FzfPreviewBuffers<CR>
+"nmap <Leader>f [fzf-p]
+"xmap <Leader>f [fzf-p]
+"
+"nnoremap <silent> [fzf-p]d      :<C-u>FzfPreviewDirectoryFiles<CR>
+"nnoremap <silent> [fzf-p]p      :<C-u>FzfPreviewProjectFiles<CR>
+"nnoremap <silent> [fzf-p]g      :<C-u>FzfPreviewGitFiles<CR>
+"nnoremap <silent> [fzf-p]b      :<C-u>FzfPreviewBuffers<CR>
 nnoremap          <Leader>a     :<C-u>FzfPreviewProjectGrep<Space>
 xnoremap          <Leader>a     "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
 "nnoremap <silent> [fzf-p]B     :<C-u>FzfPreviewAllBuffers<CR>
