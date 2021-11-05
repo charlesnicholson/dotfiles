@@ -24,12 +24,20 @@ Plug 'tpope/vim-vinegar'
 Plug 'moll/vim-bbye'
 
 Plug 'neovim/nvim-lspconfig'
-Plug 'kabouzeid/nvim-lspinstall'
+Plug 'williamboman/nvim-lsp-installer'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'https://gn.googlesource.com/gn', { 'rtp': 'misc/vim' }
 
-Plug 'hrsh7th/nvim-compe'
+Plug 'hrsh7th/cmp-vsnip'
+Plug 'hrsh7th/vim-vsnip'
+Plug 'hrsh7th/vim-vsnip-integ'
+
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
 
 Plug 'scrooloose/nerdtree'
 Plug 'luochen1990/rainbow'
@@ -54,7 +62,7 @@ set autoindent
 set autoread
 set backspace=indent,eol,start
 set clipboard=unnamed
-set completeopt=menuone,noinsert,noselect
+set completeopt=menu,menuone,noselect
 set directory-=.
 set encoding=utf-8
 set expandtab
@@ -194,53 +202,81 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 )
 EOF
 
-" nvim-lspinstall
+" nvim-cmp
 lua <<EOF
-local function setup_servers()
-  require'lspinstall'.setup()
-  local servers = require'lspinstall'.installed_servers()
-  for _, server in pairs(servers) do
-    if server == "cpp" then
-      require'lspconfig'[server].setup{
-        handlers = {
-          ["textDocument/publishDiagnostics"] = vim.lsp.with(
-            vim.lsp.diagnostic.on_publish_diagnostics, {
-              signs = false,
-              underline = false,
-              update_in_insert = false,
-              virtual_text = false,
-            }
-          ),
-        }
-      }
-    else
-      require'lspconfig'[server].setup{}
-    end
-  end
-end
+  local cmp = require'cmp'
 
-setup_servers()
+  cmp.setup({
+    snippet = {
+      -- REQUIRED - you must specify a snippet engine
+      expand = function(args)
+        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+      end,
+    },
+    mapping = {
+      ['<C-d>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
+      ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
+      ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
+      ['<C-y>'] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
+      ['<C-e>'] = cmp.mapping({
+        i = cmp.mapping.abort(),
+        c = cmp.mapping.close(),
+      }),
+      ['<CR>'] = cmp.mapping.confirm({ select = true }),
+      ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' })
+    },
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp' },
+      { name = 'vsnip' }, -- For vsnip users.
+    }, {
+      { name = 'buffer' },
+      { name = 'path' }
+    })
+  })
 
--- Automatically reload after `:LspInstall <server>` so we don't have to restart neovim
-require'lspinstall'.post_install_hook = function ()
-  setup_servers()
-  vim.cmd("bufdo e")
-end
+  -- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline('/', {
+    sources = {
+      { name = 'buffer' }
+    }
+  })
+
+  -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+  cmp.setup.cmdline(':', {
+    sources = cmp.config.sources({
+      { name = 'path' }
+    }, {
+      { name = 'cmdline' }
+    })
+  })
+
 EOF
 
-" nvim-compe
-let g:compe = {}
-let g:compe.enabled = v:true
-let g:compe.source = {
-  \ 'nvim_lsp': v:true,
-  \ 'treesitter': v:true,
-  \ 'path': v:true,
-  \ 'buffer': v:true,
-  \ 'ultisnips': v:true,
-  \ 'calc': v:true,
-  \ }
+" lsp-installer
+lua <<EOF
+local lsp_installer = require("nvim-lsp-installer")
 
-inoremap <silent><expr> <C-Space> compe#complete()
+lsp_installer.on_server_ready(function(server)
+  local opts = {}
+
+  opts.capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+
+  if server.name == "clangd" then
+      opts.handlers = {
+        ["textDocument/publishDiagnostics"] = vim.lsp.with(
+          vim.lsp.diagnostic.on_publish_diagnostics, {
+            signs = false,
+            underline = false,
+            update_in_insert = false,
+            virtual_text = false,
+          }
+        ),
+      }
+  end
+
+  server:setup(opts)
+end)
+EOF
 
 " fzf-preview
 "nmap <Leader>f [fzf-p]
