@@ -30,7 +30,6 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'https://gn.googlesource.com/gn', { 'rtp': 'misc/vim' }
 
 Plug 'hrsh7th/nvim-compe'
-Plug 'glepnir/lspsaga.nvim'
 
 Plug 'scrooloose/nerdtree'
 Plug 'luochen1990/rainbow'
@@ -95,7 +94,11 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 " color the gutter with solarized-dark
 highlight SignColumn ctermbg=8
 
+au Filetype c,c++ setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 au Filetype typescript setlocal ts=2 sw=2 expandtab
+
+" Highlight text on yank
+au TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
 
 " j and k navigate wrapped lines
 noremap j gj
@@ -184,54 +187,45 @@ require'nvim-treesitter.configs'.setup {
 }
 EOF
 
-" nvim-lspinstall
-lua <<EOF
-local required_servers = {
-  "bash",
-  "cmake",
-  "cpp",
-  "dockerfile",
-  "graphql",
-  "html",
-  "json",
-  "lua",
-  "python",
-  "typescript",
-  "vim",
-  "yaml",
-}
-
-local installed_servers = require'lspinstall'.installed_servers()
-for _, server in pairs(required_servers) do
-  if not vim.tbl_contains(installed_servers, server) then
-    require'lspinstall'.install_server(server)
-  end
-end
-EOF
-
 " lspconfig
 lua <<EOF
-lsp_cfg = require('lspconfig')
-lsp_cfg.bashls.setup{}
---lsp_cfg.clangd.setup{}
-lsp_cfg.cmake.setup{}
-lsp_cfg.dockerls.setup{}
-lsp_cfg.graphql.setup{}
-lsp_cfg.html.setup{}
-lsp_cfg.jsonls.setup{}
-lsp_cfg.pyright.setup{}
-lsp_cfg.tsserver.setup{}
-lsp_cfg.vimls.setup{}
-lsp_cfg.yamlls.setup{}
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+  vim.lsp.diagnostic.on_publish_diagnostics, { update_in_insert = false }
+)
 EOF
 
-" lsp general
+" nvim-lspinstall
 lua <<EOF
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-  vim.lsp.diagnostic.on_publish_diagnostics, {
-    update_in_insert = true,
-  }
-)
+local function setup_servers()
+  require'lspinstall'.setup()
+  local servers = require'lspinstall'.installed_servers()
+  for _, server in pairs(servers) do
+    if server == "cpp" then
+      require'lspconfig'[server].setup{
+        handlers = {
+          ["textDocument/publishDiagnostics"] = vim.lsp.with(
+            vim.lsp.diagnostic.on_publish_diagnostics, {
+              signs = false,
+              underline = false,
+              update_in_insert = false,
+              virtual_text = false,
+            }
+          ),
+        }
+      }
+    else
+      require'lspconfig'[server].setup{}
+    end
+  end
+end
+
+setup_servers()
+
+-- Automatically reload after `:LspInstall <server>` so we don't have to restart neovim
+require'lspinstall'.post_install_hook = function ()
+  setup_servers()
+  vim.cmd("bufdo e")
+end
 EOF
 
 " nvim-compe
@@ -247,11 +241,6 @@ let g:compe.source = {
   \ }
 
 inoremap <silent><expr> <C-Space> compe#complete()
-
-" lspsaga
-lua <<EOF
-require'lspsaga'.init_lsp_saga{}
-EOF
 
 " fzf-preview
 "nmap <Leader>f [fzf-p]
@@ -322,7 +311,7 @@ fun! LaptopLayout()
   terminal
   NERDTree
   wincmd l " code 1
-  vertical resize 90
+  vertical resize 100
   stopinsert
 endfun
 command! -register LaptopLayout call LaptopLayout()
