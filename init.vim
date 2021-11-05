@@ -32,7 +32,7 @@ Plug 'https://gn.googlesource.com/gn', { 'rtp': 'misc/vim' }
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
-
+Plug 'ray-x/cmp-treesitter'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
@@ -227,6 +227,7 @@ lua <<EOF
     },
     sources = cmp.config.sources({
       { name = 'nvim_lsp' },
+      { name = 'treesitter' },
       { name = 'vsnip' }, -- For vsnip users.
     }, {
       { name = 'buffer' },
