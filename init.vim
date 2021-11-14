@@ -23,6 +23,8 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-vinegar'
 Plug 'moll/vim-bbye'
 
+Plug 'phaazon/hop.nvim'
+
 Plug 'neovim/nvim-lspconfig'
 Plug 'williamboman/nvim-lsp-installer'
 
@@ -160,6 +162,14 @@ au BufWritePre * :call <SID>StripTrailingWhitespaces()
 
 vnoremap p "_dP
 noremap x "_x
+
+" hop
+lua <<EOF
+require'hop'.setup()
+vim.api.nvim_set_keymap('n', 'f', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR, current_line_only = true })<cr>", {})
+vim.api.nvim_set_keymap('n', 'F', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, current_line_only = true })<cr>", {})
+vim.api.nvim_set_keymap('n', '<Leader>h', "<cmd> lua require'hop'.hint_words{}<cr>", {noremap = true})
+EOF
 
 " treesitter
 lua <<EOF
