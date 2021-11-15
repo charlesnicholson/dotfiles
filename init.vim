@@ -12,6 +12,8 @@ Plug 'nvim-lua/plenary.nvim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'yuki-ycino/fzf-preview.vim', { 'branch': 'release/remote', 'do': ':UpdateRemotePlugins' }
 
+Plug 'nvim-telescope/telescope.nvim'
+
 Plug 'ryanoasis/vim-devicons'
 Plug 'altercation/vim-colors-solarized'
 Plug 'bling/vim-airline'
@@ -165,12 +167,19 @@ au BufWritePre * :call <SID>StripTrailingWhitespaces()
 vnoremap p "_dP
 noremap x "_x
 
+" telescope
+lua <<EOF
+require'telescope'.setup{}
+EOF
+
 " hop
 lua <<EOF
 require'hop'.setup()
 vim.api.nvim_set_keymap('n', 'f', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR, current_line_only = true })<cr>", {})
+
 vim.api.nvim_set_keymap('n', 'F', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, current_line_only = true })<cr>", {})
-vim.api.nvim_set_keymap('n', '<Leader>h', "<cmd> lua require'hop'.hint_words{}<cr>", {noremap = true})
+
+vim.api.nvim_set_keymap('n', '<Leader>h', "<cmd>lua require'hop'.hint_words{}<cr>", {noremap = true})
 EOF
 
 " treesitter
@@ -222,7 +231,7 @@ local cmp = require('cmp')
 cmp.setup({
   snippet = {
     expand = function(args)
-      vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+      vim.fn["vsnip#anonymous"](args.body)
     end,
   },
 
@@ -234,6 +243,7 @@ cmp.setup({
         nvim_lsp = "[LSP]",
         buffer = "[BUF]",
         treesitter = "[TS]",
+        path = "[PATH]",
       })[entry.source.name]
 
       return vim_item
