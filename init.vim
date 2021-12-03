@@ -9,43 +9,39 @@ endif
 call plug#begin('~/.local/share/nvim/plugged')
 Plug 'nvim-lua/plenary.nvim'
 
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'yuki-ycino/fzf-preview.vim', { 'branch': 'release/remote', 'do': ':UpdateRemotePlugins' }
-
-Plug 'nvim-telescope/telescope.nvim'
+Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-surround'
+Plug 'phaazon/hop.nvim'
 
 Plug 'ryanoasis/vim-devicons'
-Plug 'altercation/vim-colors-solarized'
+Plug 'kyazdani42/nvim-web-devicons'
+Plug 'lifepillar/vim-solarized8'
+
+Plug 'kyazdani42/nvim-tree.lua'
+Plug 'romgrk/barbar.nvim'
 Plug 'bling/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
-Plug 'tpope/vim-unimpaired'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-vinegar'
-Plug 'moll/vim-bbye'
-
-Plug 'phaazon/hop.nvim'
-
 Plug 'neovim/nvim-lspconfig'
 Plug 'williamboman/nvim-lsp-installer'
+Plug 'onsails/lspkind-nvim'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'https://gn.googlesource.com/gn', { 'rtp': 'misc/vim' }
 
-Plug 'onsails/lspkind-nvim'
+Plug 'nvim-telescope/telescope.nvim'
 
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
+Plug 'hrsh7th/cmp-calc'
 Plug 'hrsh7th/cmp-nvim-lsp'
 Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'ray-x/cmp-treesitter'
 
-Plug 'scrooloose/nerdtree'
 Plug 'luochen1990/rainbow'
 Plug 'kshenoy/vim-signature'
 Plug 'airblade/vim-gitgutter'
@@ -56,13 +52,9 @@ let mapleader = ","
 filetype plugin indent on
 syntax enable
 
-if $SSH_CONNECTION
-  let g:solarized_termcolors=256
-  let g:solarized_termtrans=1
-endif
-
+set termguicolors
 set background=dark
-colorscheme solarized
+colorscheme solarized8
 
 set autoindent
 set autoread
@@ -167,6 +159,14 @@ au BufWritePre * :call <SID>StripTrailingWhitespaces()
 vnoremap p "_dP
 noremap x "_x
 
+" bbar
+:nnoremap <Leader>q :BufferClose<CR>
+
+" nvim-tree
+lua <<EOF
+require'nvim-tree'.setup{}
+EOF
+
 " telescope
 lua <<EOF
 require'telescope'.setup{}
@@ -176,10 +176,8 @@ EOF
 lua <<EOF
 require'hop'.setup()
 vim.api.nvim_set_keymap('n', 'f', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.AFTER_CURSOR, current_line_only = true })<cr>", {})
-
 vim.api.nvim_set_keymap('n', 'F', "<cmd>lua require'hop'.hint_char1({ direction = require'hop.hint'.HintDirection.BEFORE_CURSOR, current_line_only = true })<cr>", {})
-
-vim.api.nvim_set_keymap('n', '<Leader>h', "<cmd>lua require'hop'.hint_words{}<cr>", {noremap = true})
+vim.api.nvim_set_keymap('n', '<Leader>h', "<cmd>:HopChar1<cr>", {})
 EOF
 
 " treesitter
@@ -225,8 +223,10 @@ EOF
 
 " nvim-cmp
 lua <<EOF
-local lspkind = require('lspkind')
-local cmp = require('cmp')
+local lspkind = require'lspkind'
+lspkind.init{}
+
+local cmp = require'cmp'
 
 cmp.setup({
   snippet = {
@@ -267,6 +267,7 @@ cmp.setup({
     { name = 'nvim_lsp' },
     { name = 'treesitter' },
     { name = 'vsnip' },
+    { name = 'calc' },
     { name = 'buffer' },
     { name = 'path' }
   })
@@ -316,35 +317,9 @@ lsp_installer.on_server_ready(function(server)
 end)
 EOF
 
-" fzf-preview
-"nmap <Leader>f [fzf-p]
-"xmap <Leader>f [fzf-p]
-"
-"nnoremap <silent> [fzf-p]d      :<C-u>FzfPreviewDirectoryFiles<CR>
-"nnoremap <silent> [fzf-p]p      :<C-u>FzfPreviewProjectFiles<CR>
-"nnoremap <silent> [fzf-p]g      :<C-u>FzfPreviewGitFiles<CR>
-"nnoremap <silent> [fzf-p]b      :<C-u>FzfPreviewBuffers<CR>
-nnoremap          <Leader>a     :<C-u>FzfPreviewProjectGrep<Space>
-xnoremap          <Leader>a     "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-"nnoremap <silent> [fzf-p]B     :<C-u>FzfPreviewAllBuffers<CR>
-"nnoremap <silent> [fzf-p]b     :<C-u>FzfPreviewBuffers<CR>
-"nnoremap <silent> [fzf-p]p     :<C-u>FzfPreviewFromResources project_mru git<CR>
-"nnoremap <silent> [fzf-p]gf    :<C-u>FzfPreviewGitFiles<CR>
-"nnoremap <silent> [fzf-p]gs    :<C-u>FzfPreviewGitStatus<CR>
-"nnoremap <silent> [fzf-p]ga    :<C-u>FzfPreviewGitActions<CR>
-"nnoremap <silent> [fzf-p]o     :<C-u>FzfPreviewFromResources buffer project_mru<CR>
-"nnoremap <silent> [fzf-p]<C-o> :<C-u>FzfPreviewJumps<CR>
-"nnoremap <silent> [fzf-p]g;    :<C-u>FzfPreviewChanges<CR>
-"nnoremap <silent> [fzf-p]/     :<C-u>FzfPreviewLines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'"<CR>
-"nnoremap <silent> [fzf-p]*     :<C-u>FzfPreviewLines --add-fzf-arg=--no-sort --add-fzf-arg=--query="'<C-r>=expand('<cword>')<CR>"<CR>
-"nnoremap          [fzf-p]gr    :<C-u>FzfPreviewProjectGrep<Space>
-"xnoremap          [fzf-p]gr    "sy:FzfPreviewProjectGrep<Space>-F<Space>"<C-r>=substitute(substitute(@s, '\n', '', 'g'), '/', '\\/', 'g')<CR>"
-"nnoremap <silent> [fzf-p]t     :<C-u>FzfPreviewBufferTags<CR>
-"nnoremap <silent> [fzf-p]q     :<C-u>FzfPreviewQuickFix<CR>
-"nnoremap <silent> [fzf-p]l     :<C-u>FzfPreviewLocationList<CR>
-
-" fzf (fuzzy completer)
-nmap <leader>t :FZF<CR>
+" telescope
+nmap <leader>t :Telescope find_files<CR>
+nmap <leader>a :Telescope live_grep<CR>
 
 " NERDTree
 nmap <leader>ntt :NERDTreeToggle<CR>
@@ -353,10 +328,6 @@ let g:NERDSpaceDelims=1
 
 " airline
 let g:airline_powerline_fonts = 1
-let g:airline#extensions#tabline#enabled = 1
-
-" bbye
-:nnoremap <Leader>q :Bdelete<CR>
 
 " Rainbow
 let g:rainbow_active = 1
@@ -369,7 +340,7 @@ fun! DesktopLayout()
   terminal
   sp " terminal 3
   terminal
-  NERDTree
+  NvimTreeOpen
   wincmd l " code 1
   vertical resize 100
   wincmd l " code 2
@@ -383,7 +354,7 @@ fun! LaptopLayout()
   terminal
   sp " terminal 2
   terminal
-  NERDTree
+  NvimTreeOpen
   wincmd l " code 1
   vertical resize 100
   stopinsert
