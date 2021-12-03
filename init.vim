@@ -164,8 +164,11 @@ noremap x "_x
 
 " nvim-tree
 lua <<EOF
-require'nvim-tree'.setup{}
+require'nvim-tree'.setup{ view = { width = 40 } }
 EOF
+" (l)ocate (f)ile
+nmap <leader>lf :NvimTreeFindFile<CR>
+
 
 " telescope
 lua <<EOF
@@ -320,11 +323,6 @@ EOF
 " telescope
 nmap <leader>t :Telescope find_files<CR>
 nmap <leader>a :Telescope live_grep<CR>
-
-" NERDTree
-nmap <leader>ntt :NERDTreeToggle<CR>
-nmap <leader>ntf :NERDTreeFind<CR>
-let g:NERDSpaceDelims=1
 
 " airline
 let g:airline_powerline_fonts = 1
