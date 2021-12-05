@@ -159,8 +159,12 @@ au BufWritePre * :call <SID>StripTrailingWhitespaces()
 vnoremap p "_dP
 noremap x "_x
 
-" bbar
-:nnoremap <Leader>q :BufferClose<CR>
+" barbar
+nnoremap silent <Leader>q :BufferClose<CR>
+nnoremap silent <leader>bp :BufferPick<CR>
+" steal back from vim-unimpaired for tab navigation
+nnoremap silent [b :BufferPrevious<CR>
+nnoremap silent ]b :BufferNext<CR>
 
 " nvim-tree
 lua <<EOF
