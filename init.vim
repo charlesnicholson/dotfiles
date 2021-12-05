@@ -160,11 +160,11 @@ vnoremap p "_dP
 noremap x "_x
 
 " barbar
-nnoremap silent <Leader>q :BufferClose<CR>
-nnoremap silent <leader>bp :BufferPick<CR>
+nnoremap <Leader>q :BufferClose<CR>
+nnoremap <leader>bp :BufferPick<CR>
 " steal back from vim-unimpaired for tab navigation
-nnoremap silent [b :BufferPrevious<CR>
-nnoremap silent ]b :BufferNext<CR>
+nnoremap [b :BufferPrevious<CR>
+nnoremap ]b :BufferNext<CR>
 
 " nvim-tree
 lua <<EOF
