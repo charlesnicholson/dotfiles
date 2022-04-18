@@ -24,7 +24,7 @@ Plug 'vim-airline/vim-airline-themes'
 
 Plug 'neovim/nvim-lspconfig'
 Plug 'williamboman/nvim-lsp-installer'
-Plug 'onsails/lspkind-nvim'
+Plug 'onsails/lspkind.nvim'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'https://gn.googlesource.com/gn', { 'rtp': 'misc/vim' }
@@ -231,7 +231,7 @@ EOF
 " nvim-cmp
 lua <<EOF
 local lspkind = require'lspkind'
-lspkind.init{}
+lspkind.setup{}
 
 local cmp = require'cmp'
 
@@ -243,18 +243,23 @@ cmp.setup({
   },
 
   formatting = {
-    format = function(entry, vim_item)
-      vim_item.kind = lspkind.presets.default[vim_item.kind]
-      print(entry.source.name)
-      vim_item.menu = ({
-        nvim_lsp = "[LSP]",
-        buffer = "[BUF]",
-        treesitter = "[TS]",
-        path = "[PATH]",
-      })[entry.source.name]
+    format = lspkind.cmp_format({
+      mode = 'symbol', -- show only symbol annotations
+      maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
 
-      return vim_item
-    end
+      -- The function below will be called before any actual modifications from lspkind
+      -- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30))
+      before = function (entry, vim_item)
+        print(entry.source.name)
+        vim_item.menu = ({
+          nvim_lsp = "[LSP]",
+          buffer = "[BUF]",
+          treesitter = "[TS]",
+          path = "[PATH]",
+        })[entry.source.name]
+        return vim_item
+      end
+    })
   },
 
   mapping = {
