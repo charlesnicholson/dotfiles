@@ -231,8 +231,6 @@ EOF
 " nvim-cmp
 lua <<EOF
 local lspkind = require'lspkind'
-lspkind.setup{}
-
 local cmp = require'cmp'
 
 cmp.setup({
