@@ -75,6 +75,7 @@ set listchars=tab:▸\ ,trail:▫
 set relativenumber
 set number
 set ruler
+set scrollback=100000
 set scrolloff=3
 set shiftwidth=4
 set shortmess+=c
@@ -123,7 +124,7 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
 
 " escape clears highlighting
-nnoremap <silent> <Esc> :noh<CR><Esc>
+nnoremap <silent> <C-[> :noh<CR><Esc>
 
 " cursor shapes
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
@@ -138,7 +139,7 @@ set cursorline cursorcolumn
 "au BufWinEnter,BufEnter,WinEnter * if &buftype == 'terminal' | :startinsert | endif
 let g:terminal_scrollback_buffer_size = 100000
 au TermOpen * set nobuflisted
-tnoremap <Esc> <C-\><C-n>
+tnoremap <C-[> <C-\><C-n>
 
 " md files are markdown
 au BufRead,BufNewFile *.md set filetype=markdown
@@ -176,7 +177,17 @@ nmap <leader>lf :NvimTreeFindFile<CR>
 
 " telescope
 lua <<EOF
-require'telescope'.setup{}
+telescope = require'telescope'
+local actions = require'telescope.actions'
+telescope.setup{
+  defaults = {
+    mappings = {
+      n = {
+          ["<C-[>"] = actions.close,
+      }
+    }
+  }
+}
 EOF
 
 " hop
@@ -247,16 +258,16 @@ cmp.setup({
 
       -- The function below will be called before any actual modifications from lspkind
       -- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30))
-      before = function (entry, vim_item)
-        print(entry.source.name)
-        vim_item.menu = ({
-          nvim_lsp = "[LSP]",
-          buffer = "[BUF]",
-          treesitter = "[TS]",
-          path = "[PATH]",
-        })[entry.source.name]
-        return vim_item
-      end
+      --before = function (entry, vim_item)
+      --  print(entry.source.name)
+      --  vim_item.menu = ({
+      --    nvim_lsp = "[LSP]",
+      --    buffer = "[BUF]",
+      --    treesitter = "[TS]",
+      --    path = "[PATH]",
+      --  })[entry.source.name]
+      --  return vim_item
+      --end
     })
   },
 
