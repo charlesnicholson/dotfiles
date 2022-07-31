@@ -19,7 +19,7 @@ done
 
 eval "$(rbenv init -)"
 
-plugins=(macos brew fzf git gem python screen sublime)
+plugins=(macos brew fzf git gem python screen sublime ripgrep fd)
 fpath=(/usr/local/share/zsh-completions $fpath)
 
 alias gps="git pull && git submodule update --init --recursive"
