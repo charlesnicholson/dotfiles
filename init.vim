@@ -170,7 +170,12 @@ nnoremap ]b :BufferNext<CR>
 
 " nvim-tree
 lua <<EOF
-require'nvim-tree'.setup{ view = { width = 40 } }
+require'nvim-tree'.setup{
+  view = {
+    width = 40,
+    preserve_window_proportions = true
+  },
+}
 EOF
 " (l)ocate (f)ile
 nmap <leader>lf :NvimTreeFindFile<CR>
