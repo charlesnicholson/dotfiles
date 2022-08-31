@@ -30,6 +30,7 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'https://gn.googlesource.com/gn', { 'rtp': 'misc/vim' }
 
 Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-vsnip'
@@ -169,7 +170,12 @@ nnoremap ]b :BufferNext<CR>
 
 " nvim-tree
 lua <<EOF
-require'nvim-tree'.setup{ view = { width = 40 } }
+require'nvim-tree'.setup{
+  view = {
+    width = 40,
+    preserve_window_proportions = true
+  },
+}
 EOF
 " (l)ocate (f)ile
 nmap <leader>lf :NvimTreeFindFile<CR>
@@ -186,8 +192,17 @@ telescope.setup{
           ["<C-[>"] = actions.close,
       }
     }
+  },
+  extensions = {
+    fzf = {
+      fuzzy = true,                    -- false will only do exact matching
+      override_generic_sorter = true,  -- override the generic sorter
+      override_file_sorter = true,     -- override the file sorter
+      case_mode = "smart_case",        -- or "ignore_case" or "respect_case"
+    }
   }
 }
+require('telescope').load_extension('fzf')
 EOF
 
 " hop
