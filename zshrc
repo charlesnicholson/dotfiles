@@ -4,6 +4,7 @@ export NODE_PATH="$NPM_PACKAGES/lib/node_modules:$NODE_PATH"
 
 for dir in \
     /bin \
+    /opt/homebrew/bin \
     /usr/bin \
     /usr/sbin \
     /usr/local/bin \
@@ -33,8 +34,8 @@ ZSH_AUTOSUGGEST_USE_ASYNC=1
 export FZF_DEFAULT_COMMAND='fd --type file'
 
 source $ZSH/oh-my-zsh.sh
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

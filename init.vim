@@ -16,6 +16,7 @@ Plug 'phaazon/hop.nvim'
 Plug 'ryanoasis/vim-devicons'
 Plug 'kyazdani42/nvim-web-devicons'
 Plug 'lifepillar/vim-solarized8'
+Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
 
 Plug 'kyazdani42/nvim-tree.lua'
 Plug 'romgrk/barbar.nvim'
@@ -55,8 +56,6 @@ syntax enable
 
 set termguicolors
 set background=dark
-colorscheme solarized8
-
 set autoindent
 set autoread
 set backspace=indent,eol,start
@@ -160,6 +159,18 @@ au BufWritePre * :call <SID>StripTrailingWhitespaces()
 
 vnoremap p "_dP
 noremap x "_x
+
+lua <<EOF
+require("tokyonight").setup({
+  -- use the night style
+  style = "night",
+  -- disable italic for functions
+  styles = {
+    keywords = "NONE"
+  },
+})
+EOF
+colorscheme tokyonight
 
 " barbar
 nnoremap <Leader>q :BufferClose<CR>
