@@ -140,6 +140,10 @@ set cursorline cursorcolumn
 let g:terminal_scrollback_buffer_size = 100000
 au TermOpen * set nobuflisted
 tnoremap <C-[> <C-\><C-n>
+tnoremap <S-Backspace> <Backspace>
+tnoremap <S-Space> <Space>
+tnoremap <C-Backspace> <Backspace>
+tnoremap <C-Space> <Space>
 
 " md files are markdown
 au BufRead,BufNewFile *.md set filetype=markdown
