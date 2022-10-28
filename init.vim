@@ -23,17 +23,17 @@ Plug 'romgrk/barbar.nvim'
 Plug 'bling/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
+Plug 'williamboman/mason.nvim'
+Plug 'williamboman/mason-lspconfig.nvim'
 Plug 'neovim/nvim-lspconfig'
-Plug 'williamboman/nvim-lsp-installer'
 Plug 'onsails/lspkind.nvim'
 
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'https://gn.googlesource.com/gn', { 'rtp': 'misc/vim' }
 
-Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'branch': '0.1.x' }
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 
-Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
@@ -43,6 +43,7 @@ Plug 'hrsh7th/cmp-buffer'
 Plug 'hrsh7th/cmp-path'
 Plug 'hrsh7th/cmp-cmdline'
 Plug 'ray-x/cmp-treesitter'
+Plug 'hrsh7th/nvim-cmp'
 
 Plug 'luochen1990/rainbow'
 Plug 'kshenoy/vim-signature'
@@ -281,37 +282,30 @@ cmp.setup({
     end,
   },
 
-  formatting = {
-    format = lspkind.cmp_format({
-      mode = 'symbol', -- show only symbol annotations
-      maxwidth = 50, -- prevent the popup from showing more than provided characters (e.g 50 will not show more than 50 characters)
-
-      -- The function below will be called before any actual modifications from lspkind
-      -- so that you can provide more controls on popup customization. (See [#30](https://github.com/onsails/lspkind-nvim/pull/30))
-      --before = function (entry, vim_item)
-      --  print(entry.source.name)
-      --  vim_item.menu = ({
-      --    nvim_lsp = "[LSP]",
-      --    buffer = "[BUF]",
-      --    treesitter = "[TS]",
-      --    path = "[PATH]",
-      --  })[entry.source.name]
-      --  return vim_item
-      --end
-    })
-  },
+  formatting = { format = lspkind.cmp_format({ mode = 'symbol' }) },
 
   mapping = {
-    ['<C-d>'] = cmp.mapping(cmp.mapping.scroll_docs(-4), { 'i', 'c' }),
-    ['<C-f>'] = cmp.mapping(cmp.mapping.scroll_docs(4), { 'i', 'c' }),
-    ['<C-Space>'] = cmp.mapping(cmp.mapping.complete(), { 'i', 'c' }),
-    ['<C-y>'] = cmp.config.disable,
-    ['<C-e>'] = cmp.mapping({
-      i = cmp.mapping.abort(),
-      c = cmp.mapping.close(),
-    }),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
     ['<CR>'] = cmp.mapping.confirm({ select = true }),
-    ['<Tab>'] = cmp.mapping(cmp.mapping.select_next_item(), { 'i', 's' })
+    ['<Tab>'] = cmp.mapping(function(fallback)
+        if cmp.visible() then
+          cmp.select_next_item()
+        elseif vim.fn["vsnip#available"](1) == 1 then
+          feedkey("<Plug>(vsnip-expand-or-jump)", "")
+        elseif has_words_before() then
+          cmp.complete()
+        else
+          fallback()
+        end
+      end, { "i", "s" }),
+    ["<S-Tab>"] = cmp.mapping(function()
+        if cmp.visible() then
+          cmp.select_prev_item()
+        elseif vim.fn["vsnip#jumpable"](-1) == 1 then
+          feedkey("<Plug>(vsnip-jump-prev)", "")
+        end
+      end, { "i", "s" }),
   },
 
   sources = cmp.config.sources({
@@ -324,48 +318,40 @@ cmp.setup({
   })
 })
 
--- Use buffer source for `/` (if you enabled `native_menu`, this won't work anymore).
-cmp.setup.cmdline('/', {
-  sources = {
-    { name = 'buffer' }
-  }
+cmp.setup.cmdline({ '/', '?' }, {
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = { { name = 'buffer' } }
 })
 
--- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
 cmp.setup.cmdline(':', {
-  sources = cmp.config.sources({
-    { name = 'path' }
-  }, {
-    { name = 'cmdline' }
-  })
+  mapping = cmp.mapping.preset.cmdline(),
+  sources = cmp.config.sources({ { name = 'path' } }, { { name = 'cmdline' } })
 })
-
 EOF
 
-" lsp-installer
-lua <<EOF
-local lsp_installer = require("nvim-lsp-installer")
+lua << EOF
+require('mason').setup()
+require('mason-lspconfig').setup{} --automatic_installation = true }
+require('mason-lspconfig').setup_handlers{
+    function (server_name) -- default handler (optional)
+        require('lspconfig')[server_name].setup{}
+    end,
 
-lsp_installer.on_server_ready(function(server)
-  local opts = {}
-
-  opts.capabilities = require('cmp_nvim_lsp').default_capabilities()
-
-  if server.name == "clangd" then
-      opts.handlers = {
-        ["textDocument/publishDiagnostics"] = vim.lsp.with(
-          vim.lsp.diagnostic.on_publish_diagnostics, {
-            signs = false,
-            underline = false,
-            update_in_insert = false,
-            virtual_text = false,
+    ['clangd'] = function()
+        require('lspconfig').clangd.setup{
+          handlers = {
+            ['textDocument/publishDiagnostics'] = vim.lsp.with(
+              vim.lsp.diagnostic.on_publish_diagnostics, {
+                signs = false,
+                underline = false,
+                update_in_insert = false,
+                virtual_text = false,
+              }
+            ),
           }
-        ),
-      }
-  end
-
-  server:setup(opts)
-end)
+        }
+      end
+}
 EOF
 
 " telescope
