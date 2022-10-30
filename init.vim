@@ -95,6 +95,8 @@ set wildmenu
 set wildmode=longest,list,full
 set whichwrap+=<,>,h,l,[,]
 
+let g:python3_host_prog = 'python3.10'
+
 " Use <Tab> and <S-Tab> to navigate through completion popup menu
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
