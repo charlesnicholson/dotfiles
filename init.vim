@@ -124,8 +124,10 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-h> <C-w>h
 nnoremap <C-l> <C-w>l
 
-" escape clears highlighting
-nnoremap <silent> <C-[> :noh<CR><Esc>
+" double-esc clears the search buffer
+nnoremap <silent> <Esc><Esc> :let @/ = ""<CR>
+" space toggles highlighting
+nnoremap <silent> <Space> :set hlsearch!<CR>
 
 " cursor shapes
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
@@ -167,12 +169,8 @@ noremap x "_x
 
 lua <<EOF
 require("tokyonight").setup({
-  -- use the night style
   style = "night",
-  -- disable italic for functions
-  styles = {
-    keywords = "NONE"
-  },
+  styles = { keywords = "NONE" },
 })
 EOF
 colorscheme tokyonight
@@ -193,9 +191,7 @@ require'nvim-tree'.setup{
   },
 }
 EOF
-" (l)ocate (f)ile
 nmap <leader>lf :NvimTreeFindFile<CR>
-
 
 " telescope
 lua <<EOF
@@ -203,11 +199,7 @@ telescope = require'telescope'
 local actions = require'telescope.actions'
 telescope.setup{
   defaults = {
-    mappings = {
-      n = {
-          ["<C-[>"] = actions.close,
-      }
-    }
+    mappings = { n = { ["<C-[>"] = actions.close, } }
   },
   extensions = {
     fzf = {
@@ -218,8 +210,11 @@ telescope.setup{
     }
   }
 }
-require('telescope').load_extension('fzf')
+require'telescope'.load_extension('fzf')
 EOF
+
+nmap <leader>t :Telescope find_files<CR>
+nmap <leader>a :Telescope live_grep<CR>
 
 " hop
 lua <<EOF
@@ -263,7 +258,7 @@ require'nvim-treesitter.configs'.setup {
 }
 EOF
 
-" lspconfig
+" lsp
 lua <<EOF
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
   vim.lsp.diagnostic.on_publish_diagnostics, { update_in_insert = false }
@@ -331,7 +326,25 @@ EOF
 
 lua << EOF
 require('mason').setup()
-require('mason-lspconfig').setup{} --automatic_installation = true }
+require('mason-lspconfig').setup{
+  ensure_installed = {
+    'bashls',
+    'clangd',
+    'cmake',
+    'dockerls',
+    'graphql',
+    'html',
+    'jsonls',
+    'sumneko_lua',
+    'pyright',
+    'taplo',
+    'tsserver',
+    'vimls',
+    'yamlls',
+    'zls'
+  }
+}
+
 require('mason-lspconfig').setup_handlers{
     function (server_name) -- default handler (optional)
         require('lspconfig')[server_name].setup{}
@@ -353,10 +366,6 @@ require('mason-lspconfig').setup_handlers{
       end
 }
 EOF
-
-" telescope
-nmap <leader>t :Telescope find_files<CR>
-nmap <leader>a :Telescope live_grep<CR>
 
 " airline
 let g:airline_powerline_fonts = 1
