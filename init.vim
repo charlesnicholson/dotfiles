@@ -17,6 +17,7 @@ Plug 'ryanoasis/vim-devicons'
 Plug 'kyazdani42/nvim-web-devicons'
 Plug 'lifepillar/vim-solarized8'
 Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
+Plug 'rebelot/kanagawa.nvim'
 
 Plug 'kyazdani42/nvim-tree.lua'
 Plug 'romgrk/barbar.nvim'
@@ -175,7 +176,8 @@ require("tokyonight").setup({
   styles = { keywords = "NONE" },
 })
 EOF
-colorscheme tokyonight
+
+colorscheme kanagawa
 
 " barbar
 nnoremap <Leader>q :BufferClose<CR>
