@@ -21,8 +21,7 @@ Plug 'rebelot/kanagawa.nvim'
 
 Plug 'kyazdani42/nvim-tree.lua'
 Plug 'romgrk/barbar.nvim'
-Plug 'bling/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'nvim-lualine/lualine.nvim'
 
 Plug 'williamboman/mason.nvim'
 Plug 'williamboman/mason-lspconfig.nvim'
@@ -103,9 +102,9 @@ inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 " color the gutter with solarized-dark
-highlight SignColumn ctermbg=8
+"highlight SignColumn ctermbg=8
 
-au Filetype c,c++ setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
+au Filetype c,c++,python setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 au Filetype typescript setlocal ts=2 sw=2 expandtab
 
 " Highlight text on yank
@@ -185,6 +184,11 @@ nnoremap <leader>bp :BufferPick<CR>
 " steal back from vim-unimpaired for tab navigation
 nnoremap [b :BufferPrevious<CR>
 nnoremap ]b :BufferNext<CR>
+
+" nvim-lualine
+lua <<EOF
+require('lualine').setup()
+EOF
 
 " nvim-tree
 lua <<EOF
@@ -341,6 +345,7 @@ lua << EOF
 require('mason').setup()
 require('mason-lspconfig').setup{
   ensure_installed = {
+    'asm-lsp',
     'bashls',
     'clangd',
     'cmake',
