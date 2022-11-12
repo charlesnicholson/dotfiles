@@ -15,8 +15,6 @@ Plug 'phaazon/hop.nvim'
 
 Plug 'ryanoasis/vim-devicons'
 Plug 'kyazdani42/nvim-web-devicons'
-Plug 'lifepillar/vim-solarized8'
-Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
 Plug 'rebelot/kanagawa.nvim'
 
 Plug 'kyazdani42/nvim-tree.lua'
@@ -33,6 +31,7 @@ Plug 'https://gn.googlesource.com/gn', { 'rtp': 'misc/vim' }
 
 Plug 'nvim-telescope/telescope.nvim', { 'branch': '0.1.x' }
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
+Plug 'nvim-telescope/telescope-live-grep-args.nvim'
 
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
@@ -96,18 +95,11 @@ set wildmode=longest,list,full
 set whichwrap+=<,>,h,l,[,]
 
 let g:python3_host_prog = 'python3.10'
-
-" Use <Tab> and <S-Tab> to navigate through completion popup menu
-inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-
-" color the gutter with solarized-dark
-"highlight SignColumn ctermbg=8
+let g:rainbow_active = 1
 
 au Filetype c,c++,python setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
 au Filetype typescript setlocal ts=2 sw=2 expandtab
 
-" Highlight text on yank
 au TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
 
 " j and k navigate wrapped lines
@@ -169,13 +161,6 @@ au BufWritePre * :call <SID>StripTrailingWhitespaces()
 vnoremap p "_dP
 noremap x "_x
 
-lua <<EOF
-require("tokyonight").setup({
-  style = "night",
-  styles = { keywords = "NONE" },
-})
-EOF
-
 colorscheme kanagawa
 
 " barbar
@@ -186,9 +171,7 @@ nnoremap [b :BufferPrevious<CR>
 nnoremap ]b :BufferNext<CR>
 
 " nvim-lualine
-lua <<EOF
-require('lualine').setup()
-EOF
+lua require'lualine'.setup()
 
 " nvim-tree
 lua <<EOF
@@ -219,10 +202,11 @@ telescope.setup{
   }
 }
 require'telescope'.load_extension('fzf')
+require'telescope'.load_extension('live_grep_args')
 EOF
 
-nmap <leader>t :Telescope find_files<CR>
-nmap <leader>a :Telescope live_grep<CR>
+nmap <leader>f :Telescope find_files<CR>
+nmap <leader>a :lua require'telescope'.extensions.live_grep_args.live_grep_args()<CR>
 
 " hop
 lua <<EOF
@@ -345,7 +329,6 @@ lua << EOF
 require('mason').setup()
 require('mason-lspconfig').setup{
   ensure_installed = {
-    'asm-lsp',
     'bashls',
     'clangd',
     'cmake',
@@ -363,13 +346,13 @@ require('mason-lspconfig').setup{
   }
 }
 
-require('mason-lspconfig').setup_handlers{
+require'mason-lspconfig'.setup_handlers{
     function (server_name) -- default handler (optional)
-        require('lspconfig')[server_name].setup{}
+        require'lspconfig'[server_name].setup{}
     end,
 
     ['clangd'] = function()
-        require('lspconfig').clangd.setup{
+        require'lspconfig'.clangd.setup{
           handlers = {
             ['textDocument/publishDiagnostics'] = vim.lsp.with(
               vim.lsp.diagnostic.on_publish_diagnostics, {
@@ -385,11 +368,8 @@ require('mason-lspconfig').setup_handlers{
 }
 EOF
 
-" airline
-let g:airline_powerline_fonts = 1
+nmap <leader>t :ClangdSwitchSourceHeader<CR>
 
-" Rainbow
-let g:rainbow_active = 1
 
 fun! DesktopLayout()
   vsp " code 2

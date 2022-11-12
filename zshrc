@@ -17,8 +17,6 @@ for dir in \
   if [[ -d $dir ]]; then path+=$dir; fi
 done
 
-eval "$(rbenv init -)"
-
 plugins=(macos brew fzf git gem python screen sublime ripgrep fd)
 fpath=(/usr/local/share/zsh-completions $fpath)
 
@@ -34,8 +32,8 @@ ZSH_AUTOSUGGEST_USE_ASYNC=1
 export FZF_DEFAULT_COMMAND='fd --type file'
 
 source $ZSH/oh-my-zsh.sh
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
