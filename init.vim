@@ -72,8 +72,9 @@ set laststatus=2
 set lazyredraw
 set list
 set listchars=tab:▸\ ,trail:▫
-set relativenumber
+set mouse=
 set number
+set relativenumber
 set ruler
 set scrollback=100000
 set scrolloff=3
@@ -346,13 +347,16 @@ require('mason-lspconfig').setup{
   }
 }
 
+local caps = require'cmp_nvim_lsp'.default_capabilities()
+
 require'mason-lspconfig'.setup_handlers{
     function (server_name) -- default handler (optional)
-        require'lspconfig'[server_name].setup{}
+        require'lspconfig'[server_name].setup{capabilities = caps}
     end,
 
     ['clangd'] = function()
         require'lspconfig'.clangd.setup{
+          capabilities = caps,
           handlers = {
             ['textDocument/publishDiagnostics'] = vim.lsp.with(
               vim.lsp.diagnostic.on_publish_diagnostics, {
