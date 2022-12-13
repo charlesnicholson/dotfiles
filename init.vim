@@ -373,8 +373,8 @@ require'mason-lspconfig'.setup_handlers{
 
     ['pyright'] = function()
         require'lspconfig'.pyright.setup{
-          root_dir = function(fname)
-              return util.root_pattern('pyrightconfig.json')(fname)
+          root_dir = function(...)
+              return util.root_pattern('pyrightconfig.json')(...)
           end
         }
       end
