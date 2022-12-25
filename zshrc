@@ -9,15 +9,12 @@ for dir in \
     /usr/sbin \
     /usr/local/bin \
     /usr/local/sbin \
-    /usr/local/git/bin \
-    /usr/local/opt/python@3.8/bin \
-    $NPM_PACKAGES/bin \
-    /Users/charles/src/gcc-arm-none-eabi-9-2019-q4-major/bin \
+    $NPM_PACKAGES/bin
 ; do
   if [[ -d $dir ]]; then path+=$dir; fi
 done
 
-plugins=(macos brew fzf git gem python screen sublime ripgrep fd)
+plugins=(brew fd fzf git gh gem macos python ripgrep screen sublime zsh-autosuggestions zsh-syntax-highlighting)
 fpath=(/usr/local/share/zsh-completions $fpath)
 
 alias gps="git pull && git submodule update --init --recursive"
@@ -28,13 +25,13 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=23"
 ZSH_AUTOSUGGEST_USE_ASYNC=1
 
-#export FZF_DEFAULT_COMMAND='rg --files --no-ignore-vcs --hidden'
 export FZF_DEFAULT_COMMAND='fd --type file'
 
 source $ZSH/oh-my-zsh.sh
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
