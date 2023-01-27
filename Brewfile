@@ -1,4 +1,5 @@
 tap "homebrew/bundle"
+tap "homebrew/cask-fonts"
 tap "homebrew/core"
 tap "robotsandpencils/made"
 brew "aria2"
