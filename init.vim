@@ -335,7 +335,7 @@ require('mason-lspconfig').setup{
     'graphql',
     'html',
     'jsonls',
-    'sumneko_lua',
+    'lua_ls',
     'pyright',
     'taplo',
     'tsserver',
