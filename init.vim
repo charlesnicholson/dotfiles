@@ -101,6 +101,8 @@ au Filetype typescript setlocal ts=2 sw=2 expandtab
 
 au TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
 
+autocmd TermOpen * setlocal nonumber norelativenumber
+
 " j and k navigate wrapped lines
 noremap j gj
 noremap k gk
