@@ -43,7 +43,7 @@ Plug 'hrsh7th/nvim-cmp'
 
 Plug 'luochen1990/rainbow'
 Plug 'kshenoy/vim-signature'
-Plug 'airblade/vim-gitgutter'
+Plug 'lewis6991/gitsigns.nvim'
 call plug#end()
 
 let mapleader = ","
@@ -92,7 +92,10 @@ set wildmenu
 set wildmode=longest,list,full
 set whichwrap+=<,>,h,l,[,]
 
-let g:python3_host_prog = 'python3.10'
+let g:loaded_ruby_provider = 0
+let g:loaded_perl_provider = 0
+
+let g:python3_host_prog = 'python3.11'
 let g:rainbow_active = 1
 
 au Filetype c,c++,python setlocal tabstop=2 shiftwidth=2 softtabstop=2 expandtab
@@ -101,7 +104,7 @@ au Filetype typescript setlocal ts=2 sw=2 expandtab
 au TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
 
 autocmd TermOpen * setlocal nonumber norelativenumber
-autocmd TermOpen * :GitGutterBufferDisable
+autocmd TermOpen * :Gitsigns detach
 
 " j and k navigate wrapped lines
 noremap j gj
@@ -171,8 +174,13 @@ nnoremap <leader>bp :BufferPick<CR>
 nnoremap [b :BufferPrevious<CR>
 nnoremap ]b :BufferNext<CR>
 
+" disable LSP logging (it gets huge)
+lua vim.lsp.set_log_level("off") -- "debug" or "trace"
+
 " nvim-lualine
 lua require'lualine'.setup()
+
+lua require'gitsigns'.setup()
 
 " nvim-tree
 lua <<EOF
@@ -356,13 +364,14 @@ require'mason-lspconfig'.setup_handlers{
     ['clangd'] = function()
         require'lspconfig'.clangd.setup{
           capabilities = caps,
+          filetypes = { "c", "cpp", "objc", "objcpp" }, -- no "proto"
           handlers = {
             ['textDocument/publishDiagnostics'] = vim.lsp.with(
               vim.lsp.diagnostic.on_publish_diagnostics, {
-                signs = false,
-                underline = false,
+                signs = true, -- false,
+                underline = true, -- false,
                 update_in_insert = false,
-                virtual_text = false,
+                virtual_text = true, -- false,
               }
             ),
           }
