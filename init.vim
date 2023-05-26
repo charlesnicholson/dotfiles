@@ -177,9 +177,7 @@ nnoremap ]b :BufferNext<CR>
 " disable LSP logging (it gets huge)
 lua vim.lsp.set_log_level("off") -- "debug" or "trace"
 
-" nvim-lualine
 lua require'lualine'.setup()
-
 lua require'gitsigns'.setup()
 
 " nvim-tree
@@ -216,6 +214,10 @@ EOF
 
 nmap <leader>f :Telescope find_files<CR>
 nmap <leader>a :lua require'telescope'.extensions.live_grep_args.live_grep_args()<CR>
+nmap <leader>jd :lua require'telescope.builtin'.lsp_definitions()<CR>
+nmap <leader>js :lua require'telescope.builtin'.lsp_dynamic_workspace_symbols()<CR>
+nmap <leader>jr :lua require'telescope.builtin'.lsp_references()<CR>
+nmap <leader>jb :e#<CR>
 
 " hop
 lua <<EOF
