@@ -32,6 +32,8 @@ Plug 'nvim-telescope/telescope.nvim', { 'branch': '0.1.x' }
 Plug 'nvim-telescope/telescope-fzf-native.nvim', { 'do': 'make' }
 Plug 'nvim-telescope/telescope-live-grep-args.nvim'
 
+Plug 'jose-elias-alvarez/null-ls.nvim'
+
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
@@ -231,6 +233,18 @@ nmap <leader>js :lua require'telescope.builtin'.lsp_dynamic_workspace_symbols()<
 nmap <leader>jr :lua require'telescope.builtin'.lsp_references()<CR>
 nmap <leader>jb :e#<CR>
 
+" null-ls
+lua <<EOF
+null_ls = require'null-ls'
+null_ls.setup{
+  sources = {
+    null_ls.builtins.formatting.black,
+    null_ls.builtins.formatting.isort,
+    null_ls.builtins.formatting.clang_format,
+  }
+}
+EOF
+
 " hop
 lua <<EOF
 require'hop'.setup()
@@ -426,6 +440,8 @@ require'mason-lspconfig'.setup_handlers{
 }
 EOF
 
+nmap <leader>rs :lua vim.lsp.buf.rename()<CR>
+nmap <leader>F :lua vim.lsp.buf.format()<CR>
 nmap <leader>t :ClangdSwitchSourceHeader<CR>
 
 
