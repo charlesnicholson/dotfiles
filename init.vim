@@ -4,6 +4,8 @@ if empty(glob('~/.local/share/nvim/site/autoload/plug.vim'))
   silent !curl -fLo ~/.local/share/nvim/site/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+else
+  autocmd VimEnter * PlugUpgrade
 endif
 
 call plug#begin('~/.local/share/nvim/plugged')
@@ -171,6 +173,7 @@ colorscheme kanagawa
 
 " barbar
 nnoremap <Leader>q :BufferClose<CR>
+nnoremap <Leader>Q :BufferDelete!<CR>
 nnoremap <leader>bp :BufferPick<CR>
 " steal back from vim-unimpaired for tab navigation
 nnoremap [b :BufferPrevious<CR>
@@ -439,6 +442,8 @@ require'mason-lspconfig'.setup_handlers{
       end
 }
 EOF
+
+autocmd VimEnter * MasonUpdate
 
 nmap <leader>rs :lua vim.lsp.buf.rename()<CR>
 nmap <leader>F :lua vim.lsp.buf.format()<CR>
