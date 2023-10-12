@@ -83,7 +83,7 @@ vim.opt.showcmd = true
 vim.opt.signcolumn = "yes"
 vim.opt.smartcase = true
 vim.opt.softtabstop = 4
-vim.opt.spelllang = en
+vim.opt.spelllang = "en"
 vim.opt.splitbelow = true
 vim.opt.splitright = true
 vim.opt.swapfile = false
@@ -532,6 +532,9 @@ require 'mason-lspconfig'.setup_handlers {
                             max_line_length = "90",
                         },
                     },
+                    diagnostics = {
+                        globals = { "vim" }
+                    }
                 },
             },
         }
