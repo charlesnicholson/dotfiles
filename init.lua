@@ -53,6 +53,7 @@ vim.g.loaded_ruby_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.python3_host_prog = 'python3.11'
 vim.g.rainbow_active = 1
+vim.g.c_syntax_for_h = 1
 
 vim.opt.termguicolors = true
 vim.opt.background = "dark"
@@ -106,22 +107,20 @@ vim.opt.whichwrap:append({
 vim.cmd.colorscheme('kanagawa')
 
 vim.api.nvim_create_autocmd('FileType', {
-    pattern = { '*.py', '*.lua' },
+    pattern = { 'python', 'lua' },
     callback = function()
-        vim.opt.tabstop = 4
-        vim.opt.shiftwidth = 4
-        vim.opt.softtabstop = 4
-        vim.opt.expandtab = true
+        vim.opt_local.tabstop = 4
+        vim.opt_local.shiftwidth = 4
+        vim.opt_local.softtabstop = 4
     end,
 })
 
 vim.api.nvim_create_autocmd('FileType', {
-    pattern = { '*.c', '*.cc', '*.h', '*.hh', '*.inl' },
+    pattern = { 'c', 'cc', 'h', 'hh', 'inl' },
     callback = function()
-        vim.opt.tabstop = 2
-        vim.opt.shiftwidth = 2
-        vim.opt.softtabstop = 2
-        vim.opt.expandtab = true
+        vim.opt_local.tabstop = 2
+        vim.opt_local.shiftwidth = 2
+        vim.opt_local.softtabstop = 2
     end,
 })
 
