@@ -73,6 +73,7 @@ vim.opt.laststatus = 2
 vim.opt.lazyredraw = true
 vim.opt.list = true
 vim.opt.listchars = { tab = '▸ ', trail = '▫' }
+vim.opt.mouse = ""
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.ruler = true
@@ -237,6 +238,15 @@ require 'nvim-tree'.setup {
 
 vim.keymap.set('n', '<leader>lf', ':NvimTreeFindFile<CR>', { silent = true })
 
+-- lsp
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+    vim.lsp.diagnostic.on_publish_diagnostics, { update_in_insert = false }
+)
+
+vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
+    vim.lsp.handlers.signature_help, { focusable = false }
+)
+
 -- Hovering creates diagnostic floats
 vim.diagnostic.config {
     virtual_text = false,
@@ -369,11 +379,6 @@ require 'nvim-treesitter.configs'.setup {
         "zig",
     },
 }
-
--- lsp
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-    vim.lsp.diagnostic.on_publish_diagnostics, { update_in_insert = false }
-)
 
 -- nvim-cmp
 local lspkind = require 'lspkind'
