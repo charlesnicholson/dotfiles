@@ -39,7 +39,7 @@ Plug 'ray-x/cmp-treesitter'
 Plug 'hrsh7th/nvim-cmp'
 
 Plug 'luochen1990/rainbow'
-Plug 'kshenoy/vim-signature'
+Plug 'chentoast/marks.nvim'
 Plug 'lewis6991/gitsigns.nvim'
 vim.call('plug#end')
 
@@ -212,6 +212,9 @@ vim.api.nvim_create_autocmd('BufWritePre', {
 vim.keymap.set('v', 'p', '"_dP"', { noremap = true, silent = true })
 vim.keymap.set('', 'x', '"_x', { noremap = true, silent = true })
 
+-- marks
+require'marks'.setup{}
+
 -- barbar
 vim.keymap.set('n', '<Leader>q', ':BufferClose<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<Leader>Q', ':BufferDelete!<CR>', { noremap = true, silent = true })
@@ -244,7 +247,8 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 )
 
 vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
-    vim.lsp.handlers.signature_help, { focusable = false }
+    vim.lsp.handlers.signature_help,
+    { silent = true, focusable = false, relative = "cursor" }
 )
 
 -- Hovering creates diagnostic floats
@@ -264,12 +268,7 @@ vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
     end
 })
 
-vim.api.nvim_create_autocmd('CursorHoldI', {
-    pattern = '*',
-    callback = function()
-        vim.lsp.buf.signature_help()
-    end
-})
+vim.keymap.set('i', '<C-s>', vim.lsp.buf.signature_help, {})
 
 -- telescope
 local telescope = require 'telescope'
