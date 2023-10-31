@@ -211,7 +211,7 @@ vim.keymap.set('v', 'p', '"_dP"', { noremap = true, silent = true })
 vim.keymap.set('', 'x', '"_x', { noremap = true, silent = true })
 
 -- marks
-require'marks'.setup{}
+require 'marks'.setup {}
 
 -- barbar
 vim.keymap.set('n', '<Leader>q', ':BufferClose<CR>', { noremap = true, silent = true })
@@ -469,7 +469,7 @@ require('mason-lspconfig').setup {
         'jsonls',
         'lua_ls',
         'pyright',
-        'ruff-lsp',
+        'ruff_lsp',
         'taplo',
         'tsserver',
         'vimls',
@@ -508,6 +508,17 @@ require 'mason-lspconfig'.setup_handlers {
             root_dir = function(...)
                 return util.root_pattern('pyrightconfig.json')(...)
             end
+        }
+    end,
+
+    ['ruff_lsp'] = function()
+        require 'lspconfig'.ruff_lsp.setup {
+            capabilities = caps,
+            init_options = {
+                settings = {
+                    args = { '--target-version', 'py311' },
+                }
+            }
         }
     end,
 
