@@ -27,8 +27,6 @@ Plug('nvim-telescope/telescope.nvim', { branch = '0.1.x' })
 Plug('nvim-telescope/telescope-fzf-native.nvim', { ['do'] = 'make' })
 Plug 'nvim-telescope/telescope-live-grep-args.nvim'
 
-Plug 'jose-elias-alvarez/null-ls.nvim'
-
 Plug 'hrsh7th/cmp-vsnip'
 Plug 'hrsh7th/vim-vsnip'
 Plug 'hrsh7th/vim-vsnip-integ'
@@ -117,7 +115,7 @@ vim.api.nvim_create_autocmd('FileType', {
 })
 
 vim.api.nvim_create_autocmd('FileType', {
-    pattern = { 'c', 'cc', 'h', 'hh', 'inl' },
+    pattern = { 'c', 'cc', 'h', 'hh', 'inl', 'gn', 'gni' },
     callback = function()
         vim.opt_local.tabstop = 2
         vim.opt_local.shiftwidth = 2
@@ -317,16 +315,6 @@ vim.keymap.set('n', '<leader>jr',
     { silent = true })
 vim.keymap.set('n', '<leader>jb', ':e#<CR>', { silent = true })
 
--- null-ls
-local null_ls = require 'null-ls'
-null_ls.setup {
-    sources = {
-        null_ls.builtins.formatting.black,
-        null_ls.builtins.formatting.isort,
-        null_ls.builtins.formatting.clang_format,
-    }
-}
-
 -- hop
 require 'hop'.setup {}
 vim.keymap.set('n', 'f',
@@ -481,6 +469,7 @@ require('mason-lspconfig').setup {
         'jsonls',
         'lua_ls',
         'pyright',
+        'ruff-lsp',
         'taplo',
         'tsserver',
         'vimls',
