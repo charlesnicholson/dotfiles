@@ -544,8 +544,8 @@ require 'mason-lspconfig'.setup_handlers {
     end
 }
 
-vim.keymap.set('n', '<leader>rs', function() vim.lsp.buf.rename() end)
-vim.keymap.set('n', '<leader>F', function() vim.lsp.buf.format() end)
+vim.keymap.set('n', '<leader>rs', vim.lsp.buf.rename)
+vim.keymap.set('n', '<leader>F', vim.lsp.buf.format)
 vim.keymap.set('n', '<leader>t', ':ClangdSwitchSourceHeader<CR>')
 
 
