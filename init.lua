@@ -73,21 +73,20 @@ vim.opt.list = true
 vim.opt.listchars = { tab = '▸ ', trail = '▫' }
 vim.opt.mouse = ""
 vim.opt.number = true
+vim.opt.pumheight = 20
 vim.opt.relativenumber = true
 vim.opt.ruler = true
 vim.opt.scrollback = 100000
 vim.opt.scrolloff = 3
-vim.opt.shiftwidth = 4
 vim.opt.shortmess:append({ c = true })
 vim.opt.showcmd = true
 vim.opt.signcolumn = "yes"
 vim.opt.smartcase = true
-vim.opt.softtabstop = 4
+vim.opt.smartindent = true
 vim.opt.spelllang = "en"
 vim.opt.splitbelow = true
 vim.opt.splitright = true
 vim.opt.swapfile = false
-vim.opt.tabstop = 4
 vim.opt.undofile = true
 vim.opt.updatetime = 300
 vim.opt.visualbell = true
@@ -104,24 +103,6 @@ vim.opt.whichwrap:append({
 })
 
 vim.cmd.colorscheme('kanagawa')
-
-vim.api.nvim_create_autocmd('FileType', {
-    pattern = { 'python', 'lua' },
-    callback = function()
-        vim.opt_local.tabstop = 4
-        vim.opt_local.shiftwidth = 4
-        vim.opt_local.softtabstop = 4
-    end,
-})
-
-vim.api.nvim_create_autocmd('FileType', {
-    pattern = { 'c', 'cc', 'h', 'hh', 'inl', 'gn', 'gni' },
-    callback = function()
-        vim.opt_local.tabstop = 2
-        vim.opt_local.shiftwidth = 2
-        vim.opt_local.softtabstop = 2
-    end,
-})
 
 -- highlight text yank
 vim.api.nvim_create_autocmd('TextYankPost', {
@@ -200,12 +181,6 @@ vim.api.nvim_create_autocmd('TermOpen', {
 vim.cmd([[au BufRead,BufNewFile *.md set filetype=markdown]])
 vim.cmd([[au BufRead,BufNewFile *.md set spell]])
 vim.cmd([[au BufRead,BufNewFile *.tex set spell]])
-
--- remove all trailing whitespace on save
-vim.api.nvim_create_autocmd('BufWritePre', {
-    pattern = { '*' },
-    command = [[%s/\s\+$//e]],
-})
 
 vim.keymap.set('v', 'p', '"_dP"', { noremap = true, silent = true })
 vim.keymap.set('', 'x', '"_x', { noremap = true, silent = true })
@@ -343,8 +318,8 @@ require 'nvim-treesitter.configs'.setup {
     },
 
     indent = {
-        enable = false,
-        disable = {},
+        enable = true,
+        disable = { },
     },
 
     ensure_installed = {
@@ -478,8 +453,12 @@ require('mason-lspconfig').setup {
     }
 }
 
-local caps = require 'cmp_nvim_lsp'.default_capabilities()
 local util = require("lspconfig/util")
+
+local caps = vim.tbl_deep_extend("force",
+  vim.lsp.protocol.make_client_capabilities(),
+  require('cmp_nvim_lsp').default_capabilities()
+)
 
 require 'mason-lspconfig'.setup_handlers {
     function(server_name) -- default handler (optional)
@@ -505,8 +484,8 @@ require 'mason-lspconfig'.setup_handlers {
 
     ['pyright'] = function()
         require 'lspconfig'.pyright.setup {
-            root_dir = function(...)
-                return util.root_pattern('pyrightconfig.json')(...)
+            root_dir = function(fname)
+                return util.root_pattern("pyrightconfig.json")(fname) or util.find_git_ancestor(fname) or util.path.dirname(fname)
             end
         }
     end,

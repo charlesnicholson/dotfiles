@@ -14,7 +14,7 @@ for dir in \
   if [[ -d $dir ]]; then path+=$dir; fi
 done
 
-plugins=(brew fd fzf git gh gem macos python ripgrep screen sublime zsh-autosuggestions zsh-syntax-highlighting)
+plugins=(brew fzf git gh gem macos python screen sublime zsh-autosuggestions zsh-syntax-highlighting)
 fpath=(/usr/local/share/zsh-completions $fpath)
 
 alias gps="git pull && git submodule update --init --recursive"
@@ -23,6 +23,10 @@ alias gd="git diff"
 
 if [[ -f "$HOME/src/fi/github-pat.txt" ]]; then
   export GITHUB_TOKEN=$(cat "$HOME/src/fi/github-pat.txt")
+fi
+
+if [[ -f "$HOME/src/fi/basic-auth.txt" ]]; then
+  export FI_SERVER_AUTH_HEADER=$(cat "$HOME/src/fi/basic-auth.txt")
 fi
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
