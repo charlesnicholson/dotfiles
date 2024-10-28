@@ -319,7 +319,7 @@ require 'nvim-treesitter.configs'.setup {
 
     indent = {
         enable = true,
-        disable = { },
+        disable = {},
     },
 
     ensure_installed = {
@@ -446,7 +446,7 @@ require('mason-lspconfig').setup {
         'pyright',
         'ruff_lsp',
         'taplo',
-        'tsserver',
+        'ts_ls',
         'vimls',
         'yamlls',
         'zls'
@@ -462,6 +462,9 @@ local caps = vim.tbl_deep_extend("force",
 
 require 'mason-lspconfig'.setup_handlers {
     function(server_name) -- default handler (optional)
+        if server_name == "tsserver" then
+            server_name = "ts_ls"
+        end
         require 'lspconfig'[server_name].setup { capabilities = caps }
     end,
 
