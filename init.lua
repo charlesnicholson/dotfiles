@@ -444,7 +444,7 @@ require('mason-lspconfig').setup {
         'jsonls',
         'lua_ls',
         'pyright',
-        'ruff_lsp',
+        'ruff',
         'taplo',
         'ts_ls',
         'vimls',
@@ -456,8 +456,8 @@ require('mason-lspconfig').setup {
 local util = require("lspconfig/util")
 
 local caps = vim.tbl_deep_extend("force",
-  vim.lsp.protocol.make_client_capabilities(),
-  require('cmp_nvim_lsp').default_capabilities()
+    vim.lsp.protocol.make_client_capabilities(),
+    require('cmp_nvim_lsp').default_capabilities()
 )
 
 require 'mason-lspconfig'.setup_handlers {
@@ -488,13 +488,14 @@ require 'mason-lspconfig'.setup_handlers {
     ['pyright'] = function()
         require 'lspconfig'.pyright.setup {
             root_dir = function(fname)
-                return util.root_pattern("pyrightconfig.json")(fname) or util.find_git_ancestor(fname) or util.path.dirname(fname)
+                return util.root_pattern("pyrightconfig.json")(fname) or util.find_git_ancestor(fname) or
+                util.path.dirname(fname)
             end
         }
     end,
 
-    ['ruff_lsp'] = function()
-        require 'lspconfig'.ruff_lsp.setup {
+    ['ruff'] = function()
+        require 'lspconfig'.ruff.setup {
             capabilities = caps,
             init_options = {
                 settings = {
