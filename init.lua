@@ -29,14 +29,7 @@ Plug 'nvim-telescope/telescope-live-grep-args.nvim'
 
 Plug 'stevearc/dressing.nvim'
 
-Plug 'hrsh7th/cmp-vsnip'
-Plug 'hrsh7th/vim-vsnip'
-Plug 'hrsh7th/vim-vsnip-integ'
-Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'hrsh7th/cmp-buffer'
-Plug 'hrsh7th/cmp-cmdline'
-Plug 'ray-x/cmp-treesitter'
-Plug 'hrsh7th/nvim-cmp'
+Plug('Saghen/blink.cmp', { tag = '*' })
 
 Plug 'luochen1990/rainbow'
 Plug 'chentoast/marks.nvim'
@@ -191,9 +184,9 @@ vim.keymap.set('', 'x', '"_x', { noremap = true, silent = true })
 require 'marks'.setup {}
 
 -- barbar
-vim.keymap.set('n', '<Leader>q', ':BufferClose<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<Leader>Q', ':BufferDelete!<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>bp', ':BufferPick<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>q', '<Cmd>BufferClose<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Leader>Q', '<Cmd>BufferDelete!<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>bp', '<Cmd>BufferPick<CR>', { noremap = true, silent = true })
 
 -- steal back from vim-unimpaired for tab navigation
 vim.keymap.set('n', '[b', ':BufferPrevious<CR>', { noremap = true, silent = true })
@@ -342,93 +335,6 @@ require 'nvim-treesitter.configs'.setup {
   },
 }
 
--- nvim-cmp
-local lspkind = require 'lspkind'
-local cmp = require 'cmp'
-
-local has_words_before = function()
-  unpack = unpack or table.unpack
-  local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-  return col ~= 0 and
-      vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") ==
-      nil
-end
-
-local feedkey = function(key, mode)
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, true, true), mode, true)
-end
-cmp.setup({
-  snippet = {
-    expand = function(args)
-      vim.fn["vsnip#anonymous"](args.body)
-    end,
-  },
-
-  formatting = { format = lspkind.cmp_format({ mode = 'symbol' }) },
-
-  mapping = cmp.mapping.preset.insert({
-    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
-    ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete(),
-    ['<C-e>'] = cmp.mapping.abort(),
-    ['<CR>'] = cmp.mapping.confirm({ select = true }),
-
-    ["<Tab>"] = cmp.mapping(function(fallback)
-      if cmp.visible() then
-        cmp.select_next_item()
-      elseif vim.fn["vsnip#available"](1) == 1 then
-        feedkey("<Plug>(vsnip-expand-or-jump)", "")
-      elseif has_words_before() then
-        cmp.complete()
-      else
-        fallback()
-      end
-    end, { "i", "s" }),
-
-    ["<S-Tab>"] = cmp.mapping(function()
-      if cmp.visible() then
-        cmp.select_prev_item()
-      elseif vim.fn["vsnip#jumpable"](-1) == 1 then
-        feedkey("<Plug>(vsnip-jump-prev)", "")
-      end
-    end, { "i", "s" }),
-  }),
-
-  sources = cmp.config.sources({
-    { name = 'nvim_lsp' },
-    { name = 'vsnip' },
-  }, {
-    { name = 'buffer' },
-  })
-})
-
--- Set configuration for specific filetype.
-cmp.setup.filetype('gitcommit', {
-  sources = cmp.config.sources({
-    { name = 'cmp_git' },
-  }, {
-    { name = 'buffer' },
-  })
-})
-
--- Use buffer source for `/` and `?`
-cmp.setup.cmdline({ '/', '?' }, {
-  mapping = cmp.mapping.preset.cmdline(),
-  sources = {
-    { name = 'buffer' }
-  }
-})
-
--- Use cmdline & path source for ':'
-cmp.setup.cmdline(':', {
-  mapping = cmp.mapping.preset.cmdline(),
-  sources = cmp.config.sources({
-    { name = 'path' }
-  }, {
-    { name = 'cmdline' }
-  })
-})
-
 require('mason').setup()
 require('mason-lspconfig').setup {
   ensure_installed = {
@@ -452,10 +358,28 @@ require('mason-lspconfig').setup {
 
 local util = require("lspconfig/util")
 
-local caps = vim.tbl_deep_extend("force",
-  vim.lsp.protocol.make_client_capabilities(),
-  require('cmp_nvim_lsp').default_capabilities()
-)
+require 'blink.cmp'.setup {
+  keymap = {
+    ['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
+    ['<C-e>'] = { 'hide', 'fallback' },
+    ['<CR>'] = { 'accept', 'fallback' },
+    ['<Tab>'] = { 'select_next', 'fallback' },
+    ['<S-Tab>'] = { 'select_prev', 'fallback' },
+    ['<Up>'] = { 'select_prev', 'fallback' },
+    ['<Down>'] = { 'select_next', 'fallback' },
+    ['<C-p>'] = { 'select_prev', 'fallback' },
+    ['<C-n>'] = { 'select_next', 'fallback' },
+    ['<C-b>'] = { 'scroll_documentation_up', 'fallback' },
+    ['<C-f>'] = { 'scroll_documentation_down', 'fallback' },
+  },
+
+  completion = {
+    list = { selection = "auto_insert" },
+    menu = { draw = { columns = { { "label", "label_description", gap = 2 }, { "kind_icon", "kind" } }, } }
+  }
+}
+
+local caps = require 'blink.cmp'.get_lsp_capabilities(vim.lsp.protocol.make_client_capabilities())
 
 require 'mason-lspconfig'.setup_handlers {
   function(server_name) -- default handler (optional)
@@ -484,6 +408,7 @@ require 'mason-lspconfig'.setup_handlers {
 
   ['pyright'] = function()
     require 'lspconfig'.pyright.setup {
+      capabilities = caps,
       root_dir = function(fname)
         return util.root_pattern("pyrightconfig.json")(fname) or util.find_git_ancestor(fname) or
             util.path.dirname(fname)
@@ -526,7 +451,7 @@ require 'mason-lspconfig'.setup_handlers {
 
 vim.keymap.set('n', '<leader>rs', vim.lsp.buf.rename)
 vim.keymap.set('n', '<leader>F', vim.lsp.buf.format)
-vim.keymap.set('n', '<leader>qf', vim.lsp.buf.code_action)
+vim.keymap.set('n', '<leader>QF', vim.lsp.buf.code_action)
 vim.keymap.set('n', '<leader>t', ':ClangdSwitchSourceHeader<CR>')
 
 
