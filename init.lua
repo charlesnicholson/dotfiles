@@ -29,7 +29,7 @@ Plug 'nvim-telescope/telescope-live-grep-args.nvim'
 
 Plug 'stevearc/dressing.nvim'
 
-Plug('Saghen/blink.cmp', { tag = '*' })
+Plug('Saghen/blink.cmp', { tag = 'v*' })
 
 Plug 'luochen1990/rainbow'
 Plug 'chentoast/marks.nvim'
@@ -375,7 +375,10 @@ require 'blink.cmp'.setup {
 
   completion = {
     list = { selection = "auto_insert" },
-    menu = { draw = { columns = { { "label", "label_description", gap = 2 }, { "kind_icon", "kind" } }, } }
+    menu = {
+      draw = { columns = { { "label", "label_description", gap = 1 }, { "kind_icon", "kind" } }, },
+      auto_show = function(ctx) return vim.api.nvim_buf_get_option(0, 'buftype') ~= 'prompt' end
+    }
   }
 }
 
