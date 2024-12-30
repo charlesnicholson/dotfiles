@@ -49,7 +49,7 @@ vim.g.rainbow_active = 1
 vim.g.c_syntax_for_h = 1
 
 vim.opt.termguicolors = true
-vim.opt.background = "dark"
+--vim.opt.background = "dark"
 vim.opt.autoindent = true
 vim.opt.autoread = true
 vim.opt.backspace = { 'indent', 'eol', 'start' }
@@ -99,11 +99,11 @@ vim.opt.whichwrap:append({
 
 vim.cmd.colorscheme('kanagawa')
 
--- highlight text yank
 vim.api.nvim_create_autocmd('TextYankPost', {
-  pattern = "*",
+  desc = "Highlight when yanking text",
+  group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
   callback = function()
-    vim.highlight.on_yank { higroup = 'IncSearch', timeout = 150, on_visual = true }
+    vim.highlight.on_yank()
   end,
 })
 
