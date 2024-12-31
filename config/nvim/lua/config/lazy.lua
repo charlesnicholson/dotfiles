@@ -190,7 +190,7 @@ vim.cmd([[au BufRead,BufNewFile *.md set spell]])
 vim.cmd([[au BufRead,BufNewFile *.tex set spell]])
 
 -- lazy
-require("lazy").setup({
+require"lazy".setup({
   spec = {
     { "nvim-lua/plenary.nvim" },
     {
