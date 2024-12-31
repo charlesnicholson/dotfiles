@@ -17,21 +17,23 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   end
 end
 
-vim.g.mapleader = ","
+vim.g.c_syntax_for_h = 1
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_perl_provider = 0
+vim.g.mapleader = ","
 vim.g.python3_host_prog = 'python3.11'
-vim.g.rainbow_active = 1
-vim.g.c_syntax_for_h = 1
+vim.g.terminal_scrollback_buffer_size = 100000
 
 vim.opt.rtp:prepend(lazypath)
-vim.opt.termguicolors = true
+
 --vim.opt.background = "dark"
 vim.opt.autoindent = true
 vim.opt.autoread = true
 vim.opt.backspace = { 'indent', 'eol', 'start' }
 vim.opt.clipboard = 'unnamed'
 vim.opt.completeopt = { 'menu', 'menuone', 'noselect' }
+vim.opt.cursorline = true
+vim.opt.cursorcolumn = true
 vim.opt.directory['.'] = nil
 vim.opt.encoding = "utf-8"
 vim.opt.expandtab = true
@@ -60,6 +62,7 @@ vim.opt.spelllang = "en"
 vim.opt.splitbelow = true
 vim.opt.splitright = true
 vim.opt.swapfile = false
+vim.opt.termguicolors = true
 vim.opt.undofile = true
 vim.opt.updatetime = 300
 vim.opt.visualbell = true
@@ -101,7 +104,6 @@ vim.keymap.set('v', 'p', '"_dP"', { noremap = true, silent = true })
 vim.keymap.set('', 'x', '"_x', { noremap = true, silent = true })
 
 -- terminal config
-vim.g.terminal_scrollback_buffer_size = 100000
 vim.keymap.set('t', '<C-[>', '<C-\\><C-n>', { silent = true })
 vim.keymap.set('t', '<S-Backspace>', '<Backspace>', { silent = true })
 vim.keymap.set('t', '<S-Space>', '<Space>', { silent = true })
@@ -139,10 +141,6 @@ vim.api.nvim_create_autocmd('WinLeave', {
   end
 })
 
-vim.opt.cursorline = true
-vim.opt.cursorcolumn = true
-
-
 -- clean up terminal gutter
 vim.api.nvim_create_autocmd('TermOpen', {
   pattern = "*",
@@ -153,11 +151,6 @@ vim.api.nvim_create_autocmd('TermOpen', {
     vim.cmd("Gitsigns detach")
   end,
 })
-
--- md files are markdown
-vim.cmd([[au BufRead,BufNewFile *.md set filetype=markdown]])
-vim.cmd([[au BufRead,BufNewFile *.md set spell]])
-vim.cmd([[au BufRead,BufNewFile *.tex set spell]])
 
 -- layout functions
 vim.api.nvim_create_user_command('DesktopLayout',
@@ -191,6 +184,11 @@ vim.api.nvim_create_user_command('LaptopLayout',
   end,
   {})
 
+-- md files are markdown
+vim.cmd([[au BufRead,BufNewFile *.md set filetype=markdown]])
+vim.cmd([[au BufRead,BufNewFile *.md set spell]])
+vim.cmd([[au BufRead,BufNewFile *.tex set spell]])
+
 -- lazy
 require("lazy").setup({
   spec = {
@@ -203,9 +201,8 @@ require("lazy").setup({
     { "tpope/vim-surround" },
     { "kyazdani42/nvim-web-devicons" },
     { "onsails/lspkind.nvim" },
-    { "folke/neodev.nvim" },
     { "stevearc/dressing.nvim" },
-    { "luochen1990/rainbow" },
+    { "luochen1990/rainbow", config = function() vim.g.rainbow_active = 1 end },
     { "chentoast/marks.nvim" },
     { "nvim-lualine/lualine.nvim",   config = true },
     { "lewis6991/gitsigns.nvim",     config = true },
