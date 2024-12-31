@@ -24,9 +24,6 @@ vim.g.mapleader = ","
 vim.g.python3_host_prog = 'python3.11'
 vim.g.terminal_scrollback_buffer_size = 100000
 
-vim.opt.rtp:prepend(lazypath)
-
---vim.opt.background = "dark"
 vim.opt.autoindent = true
 vim.opt.autoread = true
 vim.opt.backspace = { 'indent', 'eol', 'start' }
@@ -50,6 +47,7 @@ vim.opt.mouse = ""
 vim.opt.number = true
 vim.opt.pumheight = 20
 vim.opt.relativenumber = true
+vim.opt.rtp:prepend(lazypath)
 vim.opt.ruler = true
 vim.opt.scrollback = 100000
 vim.opt.scrolloff = 3
@@ -190,33 +188,24 @@ vim.cmd([[au BufRead,BufNewFile *.md set spell]])
 vim.cmd([[au BufRead,BufNewFile *.tex set spell]])
 
 -- lazy
-require"lazy".setup({
+require "lazy".setup({
   spec = {
     { "nvim-lua/plenary.nvim" },
-    {
-      "rebelot/kanagawa.nvim",
-      config = function() vim.cmd.colorscheme("kanagawa") end
-    },
     { "tpope/vim-unimpaired" },
     { "tpope/vim-surround" },
     { "kyazdani42/nvim-web-devicons" },
     { "onsails/lspkind.nvim" },
     { "stevearc/dressing.nvim" },
-    { "luochen1990/rainbow", config = function() vim.g.rainbow_active = 1 end },
     { "chentoast/marks.nvim" },
     { "nvim-lualine/lualine.nvim",   config = true },
     { "lewis6991/gitsigns.nvim",     config = true },
-    {
-      "kyazdani42/nvim-tree.lua",
-      opts = { view = { width = 40, preserve_window_proportions = true } }
-    },
     {
       "https://gn.googlesource.com/gn",
       config = function(plugin) vim.opt.rtp:append(plugin.dir .. "misc/vim") end
     },
     { "williamboman/mason.nvim", config = true },
+    { "neovim/nvim-lspconfig",   dependencies = "williamboman/mason-lspconfig.nvim" },
     { import = "plugins" },
-    { "neovim/nvim-lspconfig" },
   },
 
   checker = { enabled = true },
