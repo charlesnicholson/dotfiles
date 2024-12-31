@@ -1,5 +1,6 @@
 return {
-  { "Saghen/blink.cmp",
+  {
+    "Saghen/blink.cmp",
     version = "0.8.2",
     opts = {
       keymap = {
@@ -19,11 +20,17 @@ return {
       completion = {
         list = { selection = "auto_insert" },
         menu = {
-          draw = { columns = { { "label", "label_description", gap = 1 }, { "kind_icon", "kind" } }, },
-          auto_show = function() return vim.api.nvim_buf_get_option(0, 'buftype') ~= 'prompt' end
+          draw = {
+            columns = {
+              { "label",     "label_description", gap = 1 },
+              { "kind_icon", "kind" }
+            },
+          },
+          auto_show = function()
+            return vim.api.nvim_buf_get_option(0, 'buftype') ~= 'prompt'
+          end
         }
       }
     }
   }
 }
-

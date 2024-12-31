@@ -45,7 +45,11 @@ return {
 
       vim.keymap.set('n', '<leader>js',
         function()
-          require 'telescope.builtin'.lsp_workspace_symbols({ fname_width = 0.5, symbol_width = 0.4, symbol_type_width = 0.1 })
+          require 'telescope.builtin'.lsp_workspace_symbols({
+            fname_width = 0.5,
+            symbol_width = 0.4,
+            symbol_type_width = 0.1
+          })
         end,
         { silent = true })
 
@@ -54,13 +58,13 @@ return {
         { silent = true })
 
       vim.keymap.set('n', '<leader>jb', ':e#<CR>', { silent = true })
-
-
     end,
     dependencies = { 'nvim-lua/plenary.nvim' }
   },
-  { "nvim-telescope/telescope-fzf-native.nvim",
-    build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release"
+  {
+    "nvim-telescope/telescope-fzf-native.nvim",
+    build =
+    "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release"
   },
   { "nvim-telescope/telescope-live-grep-args.nvim" },
 }

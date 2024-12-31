@@ -195,7 +195,10 @@ vim.api.nvim_create_user_command('LaptopLayout',
 require("lazy").setup({
   spec = {
     { "nvim-lua/plenary.nvim" },
-    { "rebelot/kanagawa.nvim", config = function() vim.cmd.colorscheme("kanagawa") end },
+    {
+      "rebelot/kanagawa.nvim",
+      config = function() vim.cmd.colorscheme("kanagawa") end
+    },
     { "tpope/vim-unimpaired" },
     { "tpope/vim-surround" },
     { "kyazdani42/nvim-web-devicons" },
@@ -204,18 +207,20 @@ require("lazy").setup({
     { "stevearc/dressing.nvim" },
     { "luochen1990/rainbow" },
     { "chentoast/marks.nvim" },
-    { "nvim-lualine/lualine.nvim", config = true },
-    { "lewis6991/gitsigns.nvim", config = true },
-    { "kyazdani42/nvim-tree.lua",
-      opts = { view = { width = 40, preserve_window_proportions = true } } },
-    { "https://gn.googlesource.com/gn",
-      config = function(plugin) vim.opt.rtp:append(plugin.dir .. "misc/vim") end },
+    { "nvim-lualine/lualine.nvim",   config = true },
+    { "lewis6991/gitsigns.nvim",     config = true },
+    {
+      "kyazdani42/nvim-tree.lua",
+      opts = { view = { width = 40, preserve_window_proportions = true } }
+    },
+    {
+      "https://gn.googlesource.com/gn",
+      config = function(plugin) vim.opt.rtp:append(plugin.dir .. "misc/vim") end
+    },
     { "williamboman/mason.nvim", config = true },
     { import = "plugins" },
     { "neovim/nvim-lspconfig" },
   },
 
-  install = { colorscheme = { "kanagawa" } },
   checker = { enabled = true },
 })
-

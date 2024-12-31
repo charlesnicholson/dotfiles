@@ -1,6 +1,7 @@
 return {
-  { "williamboman/mason-lspconfig.nvim",
-    config = function(self, ops)
+  {
+    "williamboman/mason-lspconfig.nvim",
+    config = function()
       require('mason-lspconfig').setup {
         ensure_installed = {
           'bashls',
@@ -21,7 +22,8 @@ return {
         }
       }
 
-      local caps = require 'blink.cmp'.get_lsp_capabilities(vim.lsp.protocol.make_client_capabilities())
+      local caps = require 'blink.cmp'.get_lsp_capabilities(
+        vim.lsp.protocol.make_client_capabilities())
       local util = require("lspconfig/util")
 
       require 'mason-lspconfig'.setup_handlers {
@@ -53,7 +55,8 @@ return {
           require 'lspconfig'.pyright.setup {
             capabilities = caps,
             root_dir = function(fname)
-              return util.root_pattern("pyrightconfig.json")(fname) or util.find_git_ancestor(fname) or
+              return util.root_pattern("pyrightconfig.json")(fname) or
+                  util.find_git_ancestor(fname) or
                   util.path.dirname(fname)
             end
           }
