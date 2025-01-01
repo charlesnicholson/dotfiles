@@ -2,11 +2,12 @@ return {
   {
     "nvim-telescope/telescope.nvim",
     branch = "0.1.x",
-    config = function()
-      local telescope = require 'telescope'
-      local actions = require 'telescope.actions'
+    dependencies = { "nvim-lua/plenary.nvim" },
 
-      telescope.setup {
+    config = function()
+      local actions = require "telescope.actions"
+
+      require "telescope".setup {
         defaults = {
           mappings = { n = { ["<C-[>"] = actions.close, } }
         },
@@ -32,20 +33,20 @@ return {
         }
       }
 
-      require 'telescope'.load_extension('fzf')
-      require 'telescope'.load_extension('live_grep_args')
+      require "telescope".load_extension("fzf")
+      require "telescope".load_extension("live_grep_args")
 
-      vim.keymap.set('n', '<leader>f', ':Telescope find_files<CR>', { silent = true })
-      vim.keymap.set('n', '<leader>a',
-        function() require 'telescope'.extensions.live_grep_args.live_grep_args() end,
+      vim.keymap.set("n", "<leader>f", ":Telescope find_files<CR>", { silent = true })
+      vim.keymap.set("n", "<leader>a",
+        function() require "telescope".extensions.live_grep_args.live_grep_args() end,
         { silent = true })
-      vim.keymap.set('n', '<leader>jd',
-        function() require 'telescope.builtin'.lsp_definitions() end,
+      vim.keymap.set("n", "<leader>jd",
+        function() require "telescope.builtin".lsp_definitions() end,
         { silent = true })
 
-      vim.keymap.set('n', '<leader>js',
+      vim.keymap.set("n", "<leader>js",
         function()
-          require 'telescope.builtin'.lsp_workspace_symbols({
+          require "telescope.builtin".lsp_workspace_symbols({
             fname_width = 0.5,
             symbol_width = 0.4,
             symbol_type_width = 0.1
@@ -53,13 +54,12 @@ return {
         end,
         { silent = true })
 
-      vim.keymap.set('n', '<leader>jr',
-        function() require 'telescope.builtin'.lsp_references() end,
+      vim.keymap.set("n", "<leader>jr",
+        function() require "telescope.builtin".lsp_references() end,
         { silent = true })
 
-      vim.keymap.set('n', '<leader>jb', ':e#<CR>', { silent = true })
+      vim.keymap.set("n", "<leader>jb", ":e#<CR>", { silent = true })
     end,
-    dependencies = { 'nvim-lua/plenary.nvim' }
   },
   {
     "nvim-telescope/telescope-fzf-native.nvim",

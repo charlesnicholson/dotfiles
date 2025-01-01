@@ -218,7 +218,7 @@ require "lazy".setup({
     { "nvim-lua/plenary.nvim" },
     { "tpope/vim-unimpaired" },
     { "tpope/vim-surround" },
-    { "kyazdani42/nvim-web-devicons" },
+    { "nvim-tree/nvim-web-devicons" },
     { "onsails/lspkind.nvim",        config = true },
     { "stevearc/dressing.nvim",      config = true },
     { "chentoast/marks.nvim",        config = true },
