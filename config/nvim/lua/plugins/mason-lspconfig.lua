@@ -62,16 +62,16 @@ return {
           }
         end,
 
-        ['ruff'] = function()
-          require 'lspconfig'.ruff.setup {
-            capabilities = caps,
-            init_options = {
-              settings = {
-                args = { '--target-version', 'py311' },
-              }
-            }
-          }
-        end,
+        --['ruff'] = function()
+        --  require 'lspconfig'.ruff.setup {
+        --    capabilities = caps,
+        --    init_options = {
+        --      settings = {
+        --        args = { '--target-version', 'py311' },
+        --      }
+        --    }
+        --  }
+        --end,
 
         ['lua_ls'] = function()
           require 'lspconfig'.lua_ls.setup {
