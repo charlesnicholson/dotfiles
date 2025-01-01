@@ -199,10 +199,6 @@ require "lazy".setup({
     { "chentoast/marks.nvim" },
     { "nvim-lualine/lualine.nvim",   config = true },
     { "lewis6991/gitsigns.nvim",     config = true },
-    {
-      "https://gn.googlesource.com/gn",
-      config = function(plugin) vim.opt.rtp:append(plugin.dir .. "misc/vim") end
-    },
     { "williamboman/mason.nvim", config = true },
     { "neovim/nvim-lspconfig",   dependencies = "williamboman/mason-lspconfig.nvim" },
     { import = "plugins" },
