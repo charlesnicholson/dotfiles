@@ -21,18 +21,18 @@ vim.g.c_syntax_for_h = 1
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.mapleader = ","
-vim.g.python3_host_prog = 'python3.11'
+vim.g.python3_host_prog = "python3.11"
 vim.g.terminal_scrollback_buffer_size = 100000
 
 
 vim.opt.autoindent = true
 vim.opt.autoread = true
-vim.opt.backspace = { 'indent', 'eol', 'start' }
-vim.opt.clipboard = 'unnamed'
-vim.opt.completeopt = { 'menu', 'menuone', 'noselect' }
+vim.opt.backspace = { "indent", "eol", "start" }
+vim.opt.clipboard = "unnamed"
+vim.opt.completeopt = { "menu", "menuone", "noselect" }
 vim.opt.cursorline = true
 vim.opt.cursorcolumn = true
-vim.opt.directory['.'] = nil
+vim.opt.directory["."] = nil
 vim.opt.encoding = "utf-8"
 vim.opt.expandtab = true
 vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20" -- cursor shapes
@@ -43,7 +43,7 @@ vim.opt.incsearch = true
 vim.opt.laststatus = 2
 vim.opt.lazyredraw = true
 vim.opt.list = true
-vim.opt.listchars = { tab = '▸ ', trail = '▫' }
+vim.opt.listchars = { tab = "▸ ", trail = "▫" }
 vim.opt.mouse = ""
 vim.opt.number = true
 vim.opt.pumheight = 20
@@ -65,65 +65,65 @@ vim.opt.termguicolors = true
 vim.opt.undofile = true
 vim.opt.updatetime = 300
 vim.opt.visualbell = true
-vim.opt.wildignore = { 'node_modules/**', '__pycache__', '*.o', '*.a' }
+vim.opt.wildignore = { "node_modules/**", "__pycache__", "*.o", "*.a" }
 vim.opt.wildmenu = true
-vim.opt.wildmode = { 'longest', 'list', 'full' }
+vim.opt.wildmode = { "longest", "list", "full" }
 vim.opt.whichwrap:append({
-  ['<'] = true,
-  ['>'] = true,
+  ["<"] = true,
+  [">"] = true,
   h = true,
   l = true,
-  ['['] = true,
-  [']'] = true
+  ["["] = true,
+  ["]"] = true
 })
 
 -- j and k navigate wrapped lines
-vim.keymap.set('', 'j', 'gj', { silent = true, noremap = true })
-vim.keymap.set('', 'k', 'gk', { silent = true, noremap = true })
+vim.keymap.set("", "j", "gj", { silent = true, noremap = true })
+vim.keymap.set("", "k", "gk", { silent = true, noremap = true })
 
 -- relative number jumps work with wrapped lines
-vim.keymap.set({ 'n', 'v' }, 'j', function() return vim.v.count > 0 and 'j' or 'gj' end,
+vim.keymap.set({ "n", "v" }, "j", function() return vim.v.count > 0 and "j" or "gj" end,
   { noremap = true, expr = true })
-vim.keymap.set({ 'n', 'v' }, 'k', function() return vim.v.count > 0 and 'k' or 'gk' end,
+vim.keymap.set({ "n", "v" }, "k", function() return vim.v.count > 0 and "k" or "gk" end,
   { noremap = true, expr = true })
 
 -- navigate splits with C-hjkl
-vim.keymap.set('n', '<C-j>', '<C-w>j', { silent = true, noremap = true })
-vim.keymap.set('n', '<C-k>', '<C-w>k', { silent = true, noremap = true })
-vim.keymap.set('n', '<C-h>', '<C-w>h', { silent = true, noremap = true })
-vim.keymap.set('n', '<C-l>', '<C-w>l', { silent = true, noremap = true })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { silent = true, noremap = true })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { silent = true, noremap = true })
+vim.keymap.set("n", "<C-h>", "<C-w>h", { silent = true, noremap = true })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { silent = true, noremap = true })
 
 -- double-esc clears the search buffer
-vim.keymap.set('n', '<Esc><Esc>', ':let @/ = ""<CR>', { silent = true })
+vim.keymap.set("n", "<Esc><Esc>", ":let @/ = \"\"<CR>", { silent = true })
 
 -- space toggles highlighting
-vim.keymap.set('n', '<Space>', ':set hlsearch!<CR>', { silent = true })
+vim.keymap.set("n", "<Space>", ":set hlsearch!<CR>", { silent = true })
 
-vim.keymap.set('v', 'p', '"_dP"', { noremap = true, silent = true })
-vim.keymap.set('', 'x', '"_x', { noremap = true, silent = true })
+vim.keymap.set("v", "p", "\"_dP\"", { noremap = true, silent = true })
+vim.keymap.set("", "x", "\"_x", { noremap = true, silent = true })
 
 -- terminal config
-vim.keymap.set('t', '<C-[>', '<C-\\><C-n>', { silent = true })
-vim.keymap.set('t', '<S-Backspace>', '<Backspace>', { silent = true })
-vim.keymap.set('t', '<S-Space>', '<Space>', { silent = true })
-vim.keymap.set('t', '<C-Backspace>', '<Backspace>', { silent = true })
-vim.keymap.set('t', '<C-Space>', '<Space>', { silent = true })
+vim.keymap.set("t", "<C-[>", "<C-\\><C-n>", { silent = true })
+vim.keymap.set("t", "<S-Backspace>", "<Backspace>", { silent = true })
+vim.keymap.set("t", "<S-Space>", "<Space>", { silent = true })
+vim.keymap.set("t", "<C-Backspace>", "<Backspace>", { silent = true })
+vim.keymap.set("t", "<C-Space>", "<Space>", { silent = true })
 
 -- lsp
-vim.keymap.set('n', '<leader>rs', vim.lsp.buf.rename)
-vim.keymap.set('n', '<leader>F', vim.lsp.buf.format)
-vim.keymap.set('n', '<leader>QF', vim.lsp.buf.code_action)
-vim.keymap.set('i', '<C-s>', vim.lsp.buf.signature_help, {})
+vim.keymap.set("n", "<leader>rs", vim.lsp.buf.rename)
+vim.keymap.set("n", "<leader>F", vim.lsp.buf.format)
+vim.keymap.set("n", "<leader>QF", vim.lsp.buf.code_action)
+vim.keymap.set("i", "<C-s>", vim.lsp.buf.signature_help, {})
 
-vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-  pattern = '*',
+vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+  pattern = "*",
   callback = function()
-    vim.diagnostic.open_float(nil, { scope = 'cursor' })
+    vim.diagnostic.open_float(nil, { scope = "cursor" })
   end
 })
 
 -- Flash highlight when yanking text
-vim.api.nvim_create_autocmd('TextYankPost', {
+vim.api.nvim_create_autocmd("TextYankPost", {
   desc = "Highlight when yanking text",
   group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
   callback = function()
@@ -132,16 +132,16 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 -- highlight cursor row/column
-vim.api.nvim_create_autocmd('WinEnter', {
-  pattern = '*',
+vim.api.nvim_create_autocmd("WinEnter", {
+  pattern = "*",
   callback = function()
     vim.opt.cursorline = true
     vim.opt.cursorcolumn = true
   end
 })
 
-vim.api.nvim_create_autocmd('WinLeave', {
-  pattern = '*',
+vim.api.nvim_create_autocmd("WinLeave", {
+  pattern = "*",
   callback = function()
     vim.opt.cursorline = false
     vim.opt.cursorcolumn = false
@@ -149,7 +149,7 @@ vim.api.nvim_create_autocmd('WinLeave', {
 })
 
 -- clean up terminal gutter
-vim.api.nvim_create_autocmd('TermOpen', {
+vim.api.nvim_create_autocmd("TermOpen", {
   pattern = "*",
   callback = function()
     vim.opt_local.number = false
@@ -172,11 +172,11 @@ vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
 
 vim.diagnostic.config { -- Hovering creates diagnostic floats
   virtual_text = false,
-  float = { header = false, border = 'rounded', focusable = false, }
+  float = { header = false, border = "rounded", focusable = false, }
 }
 
 -- layout functions
-vim.api.nvim_create_user_command('DesktopLayout',
+vim.api.nvim_create_user_command("DesktopLayout",
   function()
     vim.cmd([[vsp]])
     vim.cmd([[vsp]])
@@ -194,7 +194,7 @@ vim.api.nvim_create_user_command('DesktopLayout',
   end,
   {})
 
-vim.api.nvim_create_user_command('LaptopLayout',
+vim.api.nvim_create_user_command("LaptopLayout",
   function()
     vim.cmd([[vsp]])
     vim.cmd([[terminal]])
@@ -219,13 +219,13 @@ require "lazy".setup({
     { "tpope/vim-unimpaired" },
     { "tpope/vim-surround" },
     { "nvim-tree/nvim-web-devicons" },
-    { "onsails/lspkind.nvim",        config = true },
-    { "stevearc/dressing.nvim",      config = true },
-    { "chentoast/marks.nvim",        config = true },
-    { "nvim-lualine/lualine.nvim",   config = true },
-    { "lewis6991/gitsigns.nvim",     config = true },
-    { "williamboman/mason.nvim",     config = true },
-    { "neovim/nvim-lspconfig",       dependencies = "williamboman/mason-lspconfig.nvim" },
+    { "onsails/lspkind.nvim",       config = true },
+    { "stevearc/dressing.nvim",     config = true },
+    { "chentoast/marks.nvim",       config = true },
+    { "nvim-lualine/lualine.nvim",  config = true },
+    { "lewis6991/gitsigns.nvim",    config = true },
+    { "williamboman/mason.nvim",    config = true },
+    { "neovim/nvim-lspconfig",      dependencies = "williamboman/mason-lspconfig.nvim" },
     { import = "plugins" },
   },
 
