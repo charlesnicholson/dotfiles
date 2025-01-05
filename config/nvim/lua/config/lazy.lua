@@ -24,7 +24,6 @@ vim.g.mapleader = ","
 vim.g.python3_host_prog = "python3.11"
 vim.g.terminal_scrollback_buffer_size = 100000
 
-
 vim.opt.autoindent = true
 vim.opt.autoread = true
 vim.opt.backspace = { "indent", "eol", "start" }
@@ -114,6 +113,59 @@ vim.keymap.set("n", "<leader>rs", vim.lsp.buf.rename)
 vim.keymap.set("n", "<leader>F", vim.lsp.buf.format)
 vim.keymap.set("n", "<leader>QF", vim.lsp.buf.code_action)
 vim.keymap.set("i", "<C-s>", vim.lsp.buf.signature_help, {})
+
+local function delete_qf_items()
+  local mode = vim.api.nvim_get_mode()['mode']
+  local start_idx
+  local count
+
+  if mode == 'n' then -- Normal mode
+    start_idx = vim.fn.line('.')
+    count = vim.v.count > 0 and vim.v.count or 1
+  else -- Visual mode
+    local v_start_idx = vim.fn.line('v')
+    local v_end_idx = vim.fn.line('.')
+
+    start_idx = math.min(v_start_idx, v_end_idx)
+    count = math.abs(v_end_idx - v_start_idx) + 1
+
+    -- Go back to normal
+    vim.api.nvim_feedkeys(
+      vim.api.nvim_replace_termcodes(
+        '<esc>', -- what to escape
+        true,    -- Vim leftovers
+        false,   -- Also replace `<lt>`?
+        true     -- Replace keycodes (like `<esc>`)?
+      ),
+      'x',       -- Mode flag
+      false      -- Should be false, since we already `nvim_replace_termcodes()`
+    )
+  end
+
+  local qflist = vim.fn.getqflist()
+
+  for _ = 1, count, 1 do
+    table.remove(qflist, start_idx)
+  end
+
+  vim.fn.setqflist(qflist, 'r')
+  vim.fn.cursor(start_idx, 1)
+end
+
+local quickfix_group = vim.api.nvim_create_augroup('quickfix', { clear = true })
+
+vim.api.nvim_create_autocmd('FileType', {
+  group = quickfix_group,
+  pattern = 'qf',
+  callback = function()
+    vim.api.nvim_buf_set_option(0, 'buflisted', false) -- Don't qf in buffer lists.
+    vim.keymap.set('n', '<ESC>', '<CMD>cclose<CR>',
+      { buffer = true, remap = false, silent = true })
+    vim.keymap.set('n', 'dd', delete_qf_items, { buffer = true })
+    vim.keymap.set('x', 'd', delete_qf_items, { buffer = true })
+  end,
+  desc = 'Quickfix tweaks',
+})
 
 vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
   pattern = "*",
