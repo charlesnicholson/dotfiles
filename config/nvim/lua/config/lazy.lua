@@ -264,23 +264,8 @@ vim.cmd([[au BufRead,BufNewFile *.md set filetype=markdown]])
 vim.cmd([[au BufRead,BufNewFile *.md set spell]])
 vim.cmd([[au BufRead,BufNewFile *.tex set spell]])
 
--- lazy
 require "lazy".setup({
-  spec = {
-    { "nvim-lua/plenary.nvim" },
-    { "tpope/vim-unimpaired" },
-    { "tpope/vim-surround" },
-    { "nvim-tree/nvim-web-devicons" },
-    { "onsails/lspkind.nvim",       config = true },
-    { "stevearc/dressing.nvim",     config = true },
-    { "chentoast/marks.nvim",       config = true },
-    { "nvim-lualine/lualine.nvim",  config = true },
-    { "lewis6991/gitsigns.nvim",    config = true },
-    { "williamboman/mason.nvim",    config = true },
-    { "neovim/nvim-lspconfig",      dependencies = "williamboman/mason-lspconfig.nvim" },
-    { import = "plugins" },
-  },
-
+  spec = { { import = "plugins" } },
   change_detection = { notify = false },
   checker = { enabled = true, notify = false },
 })
