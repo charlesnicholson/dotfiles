@@ -21,7 +21,7 @@ vim.g.c_syntax_for_h = 1
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.mapleader = ","
-vim.g.python3_host_prog = "python3.11"
+vim.g.python3_host_prog = "python3.13"
 vim.g.terminal_scrollback_buffer_size = 100000
 
 vim.opt.autoindent = true
