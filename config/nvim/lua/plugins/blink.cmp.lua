@@ -1,7 +1,7 @@
 return {
   {
     "Saghen/blink.cmp",
-    version = "0.9.x",
+    version = "0.10.x",
     opts = {
       keymap = {
         ['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
@@ -18,7 +18,6 @@ return {
       },
 
       completion = {
-        list = { selection = "auto_insert" },
         menu = {
           draw = {
             columns = {

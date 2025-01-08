@@ -68,7 +68,7 @@ return {
             capabilities = caps,
             init_options = {
               settings = {
-                args = { "--target-version", "py311" },
+                configuration = "~/.config/ruff.toml"
               }
             }
           }
