@@ -25,11 +25,18 @@ return {
               { "kind_icon", "kind" }
             },
           },
-          auto_show = function()
-            return vim.api.nvim_buf_get_option(0, 'buftype') ~= 'prompt'
-          end
         }
-      }
+      },
+
+      sources = {
+        min_keyword_length = function(ctx)
+          if ctx.mode == "cmdline" then
+            return 4
+          else
+            return 3
+          end
+        end
+      },
     }
   }
 }
