@@ -18,6 +18,10 @@ return {
       },
 
       completion = {
+        list = {
+          selection = { preselect = false, auto_insert = true },
+        },
+
         menu = {
           draw = {
             columns = {
@@ -28,15 +32,7 @@ return {
         }
       },
 
-      sources = {
-        min_keyword_length = function(ctx)
-          if ctx.mode == "cmdline" then
-            return 4
-          else
-            return 3
-          end
-        end
-      },
+      sources = { min_keyword_length = 3 },
     }
   }
 }
