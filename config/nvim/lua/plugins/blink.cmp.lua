@@ -1,7 +1,7 @@
 return {
   {
     "Saghen/blink.cmp",
-    version = "0.10.x",
+    version = "*",
     opts = {
       keymap = {
         ['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
