@@ -60,8 +60,6 @@ return {
       vim.keymap.set("n", "<leader>jq",
         function() require "telescope.builtin".quickfix() end,
         { silent = true })
-
-      vim.keymap.set("n", "<leader>jb", ":e#<CR>", { silent = true })
     end,
   },
   {
