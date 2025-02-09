@@ -19,10 +19,15 @@ return {
 
       completion = {
         list = {
-          selection = { preselect = false, auto_insert = true },
+          selection = { preselect = function(ctx) return ctx.mode ~= 'cmdline' end }
         },
 
         menu = {
+          auto_show = function(ctx)
+            return ctx.mode ~= "cmdline" or
+                not vim.tbl_contains({ '/', '?' }, vim.fn.getcmdtype())
+          end,
+
           draw = {
             columns = {
               { "label",     "label_description", gap = 1 },
@@ -31,8 +36,6 @@ return {
           },
         }
       },
-
-      sources = { min_keyword_length = 3 },
     }
   }
 }

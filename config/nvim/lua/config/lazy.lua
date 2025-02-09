@@ -108,12 +108,6 @@ vim.keymap.set("t", "<S-Space>", "<Space>", { silent = true })
 vim.keymap.set("t", "<C-Backspace>", "<Backspace>", { silent = true })
 vim.keymap.set("t", "<C-Space>", "<Space>", { silent = true })
 
--- lsp
-vim.keymap.set("n", "<leader>rs", vim.lsp.buf.rename)
-vim.keymap.set("n", "<leader>F", vim.lsp.buf.format)
-vim.keymap.set("n", "<leader>QF", vim.lsp.buf.code_action)
-vim.keymap.set("i", "<C-s>", vim.lsp.buf.signature_help, {})
-
 local function delete_qf_items()
   local mode = vim.api.nvim_get_mode()['mode']
   local start_idx
@@ -167,13 +161,6 @@ vim.api.nvim_create_autocmd('FileType', {
   desc = 'Quickfix tweaks',
 })
 
-vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
-  pattern = "*",
-  callback = function()
-    vim.diagnostic.open_float(nil, { scope = "cursor" })
-  end
-})
-
 -- Flash highlight when yanking text
 vim.api.nvim_create_autocmd("TextYankPost", {
   desc = "Highlight when yanking text",
@@ -210,22 +197,6 @@ vim.api.nvim_create_autocmd("TermOpen", {
     vim.cmd("Gitsigns detach")
   end,
 })
-
-vim.lsp.set_log_level("off") -- "debug" or "trace"
-
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-  vim.lsp.diagnostic.on_publish_diagnostics, { update_in_insert = false }
-)
-
-vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
-  vim.lsp.handlers.signature_help,
-  { silent = true, focusable = false, relative = "cursor" }
-)
-
-vim.diagnostic.config { -- Hovering creates diagnostic floats
-  virtual_text = false,
-  float = { header = false, border = "rounded", focusable = false, }
-}
 
 -- layout functions
 vim.api.nvim_create_user_command("DesktopLayout",

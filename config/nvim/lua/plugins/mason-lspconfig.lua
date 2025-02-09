@@ -39,16 +39,6 @@ return {
           require "lspconfig".clangd.setup {
             capabilities = caps,
             filetypes = { "c", "cpp", "objc", "objcpp" }, -- no "proto"
-            handlers = {
-              ["textDocument/publishDiagnostics"] = vim.lsp.with(
-                vim.lsp.diagnostic.on_publish_diagnostics, {
-                  signs = true,         -- false,
-                  underline = true,     -- false,
-                  update_in_insert = false,
-                  virtual_text = false, -- true, -- false,
-                }
-              ),
-            }
           }
         end,
 
@@ -97,6 +87,34 @@ return {
       }
 
       vim.keymap.set("n", "<leader>t", ":ClangdSwitchSourceHeader<CR>")
+      vim.keymap.set("n", "<leader>rs", vim.lsp.buf.rename)
+      vim.keymap.set("n", "<leader>F", vim.lsp.buf.format)
+      vim.keymap.set("n", "<leader>QF", vim.lsp.buf.code_action)
+      vim.keymap.set("i", "<C-s>", vim.lsp.buf.signature_help, {})
+
+      vim.lsp.set_log_level("off") -- "debug" or "trace"
+
+      vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+        vim.lsp.diagnostic.on_publish_diagnostics, { update_in_insert = false }
+      )
+
+      vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
+        vim.lsp.handlers.signature_help,
+        { silent = true, focusable = false, relative = "cursor" }
+      )
+
+      vim.diagnostic.config { -- Hovering creates diagnostic floats
+        virtual_text = false,
+        update_in_insert = false,
+        float = { header = false, border = "rounded", focusable = false }
+      }
+
+      vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+        pattern = "*",
+        callback = function()
+          vim.diagnostic.open_float(nil, { scope = "cursor", focusable = false })
+        end
+      })
     end
   }
 }
