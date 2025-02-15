@@ -94,22 +94,18 @@ return {
 
       vim.lsp.set_log_level("off") -- "debug" or "trace"
 
-      vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-        vim.lsp.diagnostic.on_publish_diagnostics, { update_in_insert = false }
-      )
-
       vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
         vim.lsp.handlers.signature_help,
         { silent = true, focusable = false, relative = "cursor" }
       )
 
-      vim.diagnostic.config { -- Hovering creates diagnostic floats
+      vim.diagnostic.config {
         virtual_text = false,
         update_in_insert = false,
         float = { header = false, border = "rounded", focusable = false }
       }
 
-      vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+      vim.api.nvim_create_autocmd({ "CursorHold" }, {
         pattern = "*",
         callback = function()
           vim.diagnostic.open_float(nil, { scope = "cursor", focusable = false })

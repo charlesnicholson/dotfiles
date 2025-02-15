@@ -6,5 +6,6 @@ return {
       input = { relative = "cursor" }
     },
     input = { enabled = true },
+    bigfile = { enabled = true },
   }
 }
