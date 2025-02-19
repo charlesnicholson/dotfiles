@@ -7,5 +7,6 @@ return {
     },
     input = { enabled = true },
     bigfile = { enabled = true },
+    picker = { enabled = true },
   }
 }
