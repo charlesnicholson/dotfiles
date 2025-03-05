@@ -37,6 +37,7 @@ return {
 
         ["clangd"] = function()
           require "lspconfig".clangd.setup {
+            cmd = { "clangd", "--header-insertion=never" },
             capabilities = caps,
             filetypes = { "c", "cpp", "objc", "objcpp" }, -- no "proto"
           }
