@@ -14,6 +14,11 @@ return {
         })
       end,
     },
+    display = {
+      diff = {
+        enabled = false,
+      },
+    },
     strategies = {
       chat = {
         adapter = "openai",
