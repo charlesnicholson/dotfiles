@@ -29,6 +29,10 @@ if [[ -f "$HOME/src/fi/basic-auth.txt" ]]; then
   export FI_SERVER_AUTH_HEADER=$(cat "$HOME/src/fi/basic-auth.txt")
 fi
 
+if [[ -f "$HOME/src/fi/openai-key.txt" ]]; then
+  export OPENAI_API_KEY=$(cat "$HOME/src/fi/openai-key.txt")
+fi
+
 ZSH_THEME="powerlevel10k/powerlevel10k"
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=23"
 ZSH_AUTOSUGGEST_USE_ASYNC=1

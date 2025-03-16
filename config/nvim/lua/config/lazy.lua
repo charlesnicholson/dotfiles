@@ -1,10 +1,11 @@
--- lazy bootstrap
+-- Check if lazy.nvim is installed, clone if not
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable",
-    lazyrepo, lazypath })
+  local out = vim.fn.system(
+    { "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
 
+  -- Handle shell error during git clone
   if vim.v.shell_error ~= 0 then
     vim.api.nvim_echo({
       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
@@ -17,6 +18,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   end
 end
 
+-- Basic global settings
 vim.g.c_syntax_for_h = 1
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_perl_provider = 0
@@ -24,6 +26,7 @@ vim.g.mapleader = ","
 vim.g.python3_host_prog = "python3.13"
 vim.g.terminal_scrollback_buffer_size = 100000
 
+-- Set various Neovim options
 vim.opt.autoindent = true
 vim.opt.autoread = true
 vim.opt.backspace = { "indent", "eol", "start" }
@@ -76,38 +79,40 @@ vim.opt.whichwrap:append({
   ["]"] = true
 })
 
--- j and k navigate wrapped lines
+-- Key mappings for navigating wrapped lines
 vim.keymap.set("", "j", "gj", { silent = true, noremap = true })
 vim.keymap.set("", "k", "gk", { silent = true, noremap = true })
 
--- relative number jumps work with wrapped lines
+-- Conditional navigation for wrapped lines based on relative number jumps
 vim.keymap.set({ "n", "v" }, "j", function() return vim.v.count > 0 and "j" or "gj" end,
   { noremap = true, expr = true })
 vim.keymap.set({ "n", "v" }, "k", function() return vim.v.count > 0 and "k" or "gk" end,
   { noremap = true, expr = true })
 
--- navigate splits with C-hjkl
+-- Key mappings for navigating between splits
 vim.keymap.set("n", "<C-j>", "<C-w>j", { silent = true, noremap = true })
 vim.keymap.set("n", "<C-k>", "<C-w>k", { silent = true, noremap = true })
 vim.keymap.set("n", "<C-h>", "<C-w>h", { silent = true, noremap = true })
 vim.keymap.set("n", "<C-l>", "<C-w>l", { silent = true, noremap = true })
 
--- double-esc clears the search buffer
+-- Clear search buffer with double-escape
 vim.keymap.set("n", "<Esc><Esc>", ":let @/ = \"\"<CR>", { silent = true })
 
--- space toggles highlighting
+-- Toggle highlighting with space
 vim.keymap.set("n", "<Space>", ":set hlsearch!<CR>", { silent = true })
 
+-- Overwrite default paste behavior in visual mode
 vim.keymap.set("v", "p", "\"_dP\"", { noremap = true, silent = true })
 vim.keymap.set("", "x", "\"_x", { noremap = true, silent = true })
 
--- terminal config
+-- Terminal mode specific key mappings
 vim.keymap.set("t", "<C-[>", "<C-\\><C-n>", { silent = true })
 vim.keymap.set("t", "<S-Backspace>", "<Backspace>", { silent = true })
 vim.keymap.set("t", "<S-Space>", "<Space>", { silent = true })
 vim.keymap.set("t", "<C-Backspace>", "<Backspace>", { silent = true })
 vim.keymap.set("t", "<C-Space>", "<Space>", { silent = true })
 
+-- Delete items from quickfix list
 local function delete_qf_items()
   local mode = vim.api.nvim_get_mode()['mode']
   local start_idx
@@ -146,6 +151,7 @@ local function delete_qf_items()
   vim.fn.cursor(start_idx, 1)
 end
 
+-- Quickfix window adjustments and key mappings
 local quickfix_group = vim.api.nvim_create_augroup('quickfix', { clear = true })
 
 vim.api.nvim_create_autocmd('FileType', {
@@ -170,7 +176,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
--- highlight cursor row/column
+-- Highlight cursor row/column when entering or leaving window
 vim.api.nvim_create_autocmd("WinEnter", {
   pattern = "*",
   callback = function()
@@ -187,7 +193,7 @@ vim.api.nvim_create_autocmd("WinLeave", {
   end
 })
 
--- clean up terminal gutter
+-- Clean up terminal gutter on terminal open
 vim.api.nvim_create_autocmd("TermOpen", {
   pattern = "*",
   callback = function()
@@ -198,7 +204,12 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
--- layout functions
+-- Set filetype and spell for Markdown and TeX files
+vim.cmd([[au BufRead,BufNewFile *.md set filetype=markdown]])
+vim.cmd([[au BufRead,BufNewFile *.md set spell]])
+vim.cmd([[au BufRead,BufNewFile *.tex set spell]])
+
+-- Define custom layout commands
 vim.api.nvim_create_user_command("DesktopLayout",
   function()
     vim.cmd([[vsp]])
@@ -230,11 +241,7 @@ vim.api.nvim_create_user_command("LaptopLayout",
   end,
   {})
 
--- md files are markdown
-vim.cmd([[au BufRead,BufNewFile *.md set filetype=markdown]])
-vim.cmd([[au BufRead,BufNewFile *.md set spell]])
-vim.cmd([[au BufRead,BufNewFile *.tex set spell]])
-
+-- Configure lazy plugin manager
 require "lazy".setup({
   spec = { { import = "plugins" } },
   change_detection = { notify = false },
