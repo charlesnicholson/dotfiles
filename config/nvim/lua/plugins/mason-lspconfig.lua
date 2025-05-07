@@ -9,7 +9,7 @@ return {
     },
 
     config = function()
-      require "mason-lspconfig".setup { ensure_installed = require"config.lsp.servers" }
+      require "mason-lspconfig".setup { ensure_installed = require "config.lsp.servers" }
       require "config.lsp" -- This loads all of the per-server details
     end
   }

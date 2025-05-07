@@ -6,7 +6,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   if vim.v.shell_error ~= 0 then
     vim.api.nvim_echo({
       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out, "WarningMsg" },
+      { out,                            "WarningMsg" },
       { "\nPress any key to exit..." },
     }, true, {})
     vim.fn.getchar()
@@ -206,6 +206,33 @@ vim.api.nvim_create_autocmd("TermOpen", {
 vim.cmd([[au BufRead,BufNewFile *.md set filetype=markdown]])
 vim.cmd([[au BufRead,BufNewFile *.md set spell]])
 vim.cmd([[au BufRead,BufNewFile *.tex set spell]])
+
+-- Diagnostic configuration
+vim.diagnostic.config {
+  virtual_text = false,
+  update_in_insert = false,
+  float = { header = false, border = "rounded", focusable = false }
+}
+
+vim.api.nvim_create_autocmd({ "CursorHold" }, {
+  pattern = "*",
+  callback = function()
+    vim.diagnostic.open_float(nil, { scope = "cursor", focusable = false })
+  end
+})
+
+vim.diagnostic.config {
+  virtual_text = false,
+  update_in_insert = false,
+  float = { header = false, border = "rounded", focusable = false }
+}
+
+vim.api.nvim_create_autocmd({ "CursorHold" }, {
+  pattern = "*",
+  callback = function()
+    vim.diagnostic.open_float(nil, { scope = "cursor", focusable = false })
+  end
+})
 
 -- Define custom layout commands
 vim.api.nvim_create_user_command("DesktopLayout",
