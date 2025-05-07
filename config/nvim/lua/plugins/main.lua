@@ -3,11 +3,11 @@ return {
   { "tpope/vim-unimpaired" },
   { "tpope/vim-surround" },
   { "nvim-tree/nvim-web-devicons" },
+  { "neovim/nvim-lspconfig" },
   { "onsails/lspkind.nvim",       config = true },
   { "stevearc/quicker.nvim",      config = true },
   { "chentoast/marks.nvim",       config = true },
   { "nvim-lualine/lualine.nvim",  config = true },
   { "lewis6991/gitsigns.nvim",    config = true },
-  { "williamboman/mason.nvim",    config = true },
-  { "neovim/nvim-lspconfig",      dependencies = "williamboman/mason-lspconfig.nvim" },
+  { "mason-org/mason.nvim",       config = true },
 }
