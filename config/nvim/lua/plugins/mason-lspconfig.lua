@@ -36,10 +36,16 @@ return {
         end,
 
         ["clangd"] = function()
-          require "lspconfig".clangd.setup {
-            cmd = { "clangd", "--header-insertion=never" },
+          require("lspconfig").clangd.setup {
+            cmd = {
+              "clangd",
+              "--header-insertion=never",
+              "--enable-config",
+              "--fallback-style=none",
+            },
             capabilities = caps,
-            filetypes = { "c", "cpp", "objc", "objcpp" }, -- no "proto"
+            filetypes = { "c", "cpp", "objc", "objcpp" },
+            root_dir = util.root_pattern(".clangd", ".git"),
           }
         end,
 
