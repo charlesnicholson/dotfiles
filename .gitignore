@@ -1,3 +1,4 @@
+config/nvim/lazy-lock.json
 Brewfile.lock.json
 google.vim
 **/*~
