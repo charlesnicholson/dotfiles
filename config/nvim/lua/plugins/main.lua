@@ -4,6 +4,7 @@ return {
   { "tpope/vim-surround" },
   { "nvim-tree/nvim-web-devicons" },
   { "neovim/nvim-lspconfig" },
+  { "github/copilot.vim" },
   { "onsails/lspkind.nvim",       config = true },
   { "stevearc/quicker.nvim",      config = true },
   { "chentoast/marks.nvim",       config = true },
