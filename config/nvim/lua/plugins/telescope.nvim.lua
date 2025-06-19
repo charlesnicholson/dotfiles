@@ -39,9 +39,6 @@ return {
       vim.keymap.set("n", "<leader>a",
         function() require "telescope".extensions.live_grep_args.live_grep_args() end,
         { silent = true })
-      vim.keymap.set("n", "<leader>jd",
-        function() require "telescope.builtin".lsp_definitions() end,
-        { silent = true })
 
       vim.keymap.set("n", "<leader>js",
         function()
