@@ -4,19 +4,17 @@ return {
     branch = "0.1.x",
 
     config = function()
-      local actions = require "telescope.actions"
-
       require "telescope".setup {
         defaults = {
-          mappings = { n = { ["<C-[>"] = actions.close, } }
+          mappings = { n = { ["<C-[>"] = require "telescope.actions".close, } }
         },
 
         extensions = {
           fzf = {
-            fuzzy = true,                   -- false will only do exact matching
-            override_generic_sorter = true, -- override the generic sorter
-            override_file_sorter = true,    -- override the file sorter
-            case_mode = "smart_case",       -- or "ignore_case" or "respect_case"
+            fuzzy = true, -- false will only do exact matching
+            override_generic_sorter = true,
+            override_file_sorter = true,
+            case_mode = "smart_case", -- or "ignore_case" or "respect_case"
           }
         },
 
@@ -35,7 +33,9 @@ return {
       require "telescope".load_extension("fzf")
       require "telescope".load_extension("live_grep_args")
 
-      vim.keymap.set("n", "<leader>f", ":Telescope find_files<CR>", { silent = true })
+      vim.keymap.set(
+        'n', '<leader>f', require "telescope.builtin".find_files, { silent = true })
+
       vim.keymap.set("n", "<leader>a",
         function() require "telescope".extensions.live_grep_args.live_grep_args() end,
         { silent = true })
@@ -59,6 +59,7 @@ return {
         { silent = true })
     end,
   },
+
   { "nvim-telescope/telescope-fzf-native.nvim",    build = "make" },
   { "nvim-telescope/telescope-live-grep-args.nvim" },
 }

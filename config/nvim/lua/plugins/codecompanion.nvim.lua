@@ -6,26 +6,16 @@ return {
     adapters = {
       openai = function()
         return require("codecompanion.adapters").extend("openai", {
-          schema = {
-            model = {
-              default = "gpt-4o",
-            },
-          },
+          schema = { model = { default = "gpt-4o" } },
         })
       end,
     },
-    display = {
-      diff = {
-        enabled = false,
-      },
-    },
+
+    display = { diff = { enabled = false } },
+
     strategies = {
-      chat = {
-        adapter = "openai",
-      },
-      inline = {
-        adapter = "openai",
-      },
+      chat = { adapter = "openai" },
+      inline = { adapter = "openai" },
     },
   },
 
