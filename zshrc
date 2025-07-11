@@ -41,7 +41,7 @@ if [[ -s "$NVM_DIR/bash_completion" ]]; then
   source "$NVM_DIR/bash_completion"
 fi
 
-### Instant prompt (must come before oh-my-zsh.sh)
+# Instant prompt (must come before oh-my-zsh.sh)
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
@@ -61,4 +61,9 @@ pastefinish() {
 
 zstyle :bracketed-paste-magic paste-init pasteinit
 zstyle :bracketed-paste-magic paste-finish pastefinish
+
+# vim mode on ctrl-] so it works in neovim splits as well w/o escape conflicts
+bindkey -v
+bindkey '^]' vi-cmd-mode
+bindkey -r '^['
 
