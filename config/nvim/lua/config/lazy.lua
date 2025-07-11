@@ -4,7 +4,9 @@ require("config.python_venv").setup()
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  local out = vim.fn.system(
+    { "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+
   if vim.v.shell_error ~= 0 then
     vim.api.nvim_echo({
       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
@@ -16,18 +18,11 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   end
 end
 
-vim.opt.rtp:prepend(lazypath)
-
--- Basic global settings
 vim.g.c_syntax_for_h = 1
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.mapleader = ","
--- FIX: Removed hardcoded python version (vim.g.python3_host_prog).
--- Neovim is excellent at auto-detecting a valid python3 host.
--- FIX: Removed g.terminal_scrollback_buffer_size; it's redundant with vim.opt.scrollback.
 
--- Set various Neovim options
 vim.opt.autoindent = true
 vim.opt.autoread = true
 vim.opt.backspace = { "indent", "eol", "start" }
@@ -49,6 +44,7 @@ vim.opt.mouse = ""
 vim.opt.number = true
 vim.opt.pumheight = 20
 vim.opt.relativenumber = true
+vim.opt.rtp:prepend(lazypath)
 vim.opt.ruler = true
 vim.opt.scrollback = 100000
 vim.opt.scrolloff = 3
