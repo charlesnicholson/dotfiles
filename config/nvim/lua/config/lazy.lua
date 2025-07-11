@@ -1,3 +1,5 @@
+require("config.python_venv").setup()
+
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -21,8 +23,9 @@ vim.g.c_syntax_for_h = 1
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.mapleader = ","
-vim.g.python3_host_prog = "python3.13"
-vim.g.terminal_scrollback_buffer_size = 100000
+-- FIX: Removed hardcoded python version (vim.g.python3_host_prog).
+-- Neovim is excellent at auto-detecting a valid python3 host.
+-- FIX: Removed g.terminal_scrollback_buffer_size; it's redundant with vim.opt.scrollback.
 
 -- Set various Neovim options
 vim.opt.autoindent = true
@@ -32,8 +35,6 @@ vim.opt.clipboard = "unnamed"
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
 vim.opt.cursorline = true
 vim.opt.cursorcolumn = true
-vim.opt.directory = ""
-vim.opt.encoding = "utf-8"
 vim.opt.expandtab = true
 vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20" -- cursor shapes
 vim.opt.hidden = true
@@ -48,7 +49,6 @@ vim.opt.mouse = ""
 vim.opt.number = true
 vim.opt.pumheight = 20
 vim.opt.relativenumber = true
-vim.opt.rtp:prepend(lazypath)
 vim.opt.ruler = true
 vim.opt.scrollback = 100000
 vim.opt.scrolloff = 3
@@ -68,40 +68,40 @@ vim.opt.visualbell = true
 vim.opt.wildignore = { "node_modules/**", "__pycache__", "*.o", "*.a" }
 vim.opt.wildmenu = true
 vim.opt.wildmode = { "longest", "list", "full" }
-vim.opt.whichwrap:append({
-  ["<"] = true,
-  [">"] = true,
-  h = true,
-  l = true,
-  ["["] = true,
-  ["]"] = true
-})
+vim.opt.whichwrap:append(
+  { ["<"] = true, [">"] = true, h = true, l = true, ["["] = true, ["]"] = true })
 
--- Key mappings for navigating wrapped lines
-vim.keymap.set("", "j", "gj", { silent = true, noremap = true })
-vim.keymap.set("", "k", "gk", { silent = true, noremap = true })
-
--- Conditional navigation for wrapped lines based on relative number jumps
-vim.keymap.set({ "n", "v" }, "j", function() return vim.v.count > 0 and "j" or "gj" end,
-  { noremap = true, expr = true })
-vim.keymap.set({ "n", "v" }, "k", function() return vim.v.count > 0 and "k" or "gk" end,
-  { noremap = true, expr = true })
+-- Conditional navigation for wrapped lines
+vim.keymap.set({ "n", "v" }, "j", function()
+  return vim.v.count > 0 and "j" or "gj"
+end, { expr = true, silent = true, desc = "Move down (handles wrapped lines)" })
+vim.keymap.set({ "n", "v" }, "k", function()
+  return vim.v.count > 0 and "k" or "gk"
+end, { expr = true, silent = true, desc = "Move up (handles wrapped lines)" })
 
 -- Key mappings for navigating between splits
-vim.keymap.set("n", "<C-j>", "<C-w>j", { silent = true, noremap = true })
-vim.keymap.set("n", "<C-k>", "<C-w>k", { silent = true, noremap = true })
-vim.keymap.set("n", "<C-h>", "<C-w>h", { silent = true, noremap = true })
-vim.keymap.set("n", "<C-l>", "<C-w>l", { silent = true, noremap = true })
+vim.keymap.set(
+  "n", "<C-j>", "<C-w>j", { silent = true, noremap = true, desc = "Move to split below" })
+vim.keymap.set(
+  "n", "<C-k>", "<C-w>k", { silent = true, noremap = true, desc = "Move to split above" })
+vim.keymap.set(
+  "n", "<C-h>", "<C-w>h", { silent = true, noremap = true, desc = "Move to split left" })
+vim.keymap.set(
+  "n", "<C-l>", "<C-w>l", { silent = true, noremap = true, desc = "Move to split right" })
 
 -- Clear search buffer with double-escape
-vim.keymap.set("n", "<Esc><Esc>", ":let @/ = \"\"<CR>", { silent = true })
+vim.keymap.set(
+  "n", "<Esc><Esc>", ":let @/ = \"\"<CR>", { silent = true, desc = "Clear search pattern" })
 
 -- Toggle highlighting with space
-vim.keymap.set("n", "<Space>", ":set hlsearch!<CR>", { silent = true })
+vim.keymap.set(
+  "n", "<Space>", ":set hlsearch!<CR>", { silent = true, desc = "Toggle search highlight" })
 
 -- Overwrite default paste behavior in visual mode
-vim.keymap.set("v", "p", "\"_dP\"", { noremap = true, silent = true })
-vim.keymap.set("", "x", "\"_x", { noremap = true, silent = true })
+vim.keymap.set(
+  "v", "p", "\"_dP\"", { noremap = true, silent = true, desc = "Paste without yanking" })
+vim.keymap.set({ "n", "v" }, "x", "\"_x",
+  { noremap = true, silent = true, desc = "Delete to black hole register" })
 
 -- Terminal mode specific key mappings
 vim.keymap.set("t", "<C-[>", "<C-\\><C-n>", { silent = true })
@@ -122,47 +122,32 @@ local function delete_qf_items()
   else -- Visual mode
     local v_start_idx = vim.fn.line('v')
     local v_end_idx = vim.fn.line('.')
-
     start_idx = math.min(v_start_idx, v_end_idx)
     count = math.abs(v_end_idx - v_start_idx) + 1
-
-    -- Go back to normal
-    vim.api.nvim_feedkeys(
-      vim.api.nvim_replace_termcodes(
-        '<esc>', -- what to escape
-        true,    -- Vim leftovers
-        false,   -- Also replace `<lt>`?
-        true     -- Replace keycodes (like `<esc>`)?
-      ),
-      'x',       -- Mode flag
-      false      -- Should be false, since we already `nvim_replace_termcodes()`
-    )
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<esc>', true, false, true), 'x', false)
   end
 
   local qflist = vim.fn.getqflist()
-
   for _ = 1, count, 1 do
     table.remove(qflist, start_idx)
   end
-
   vim.fn.setqflist(qflist, 'r')
   vim.fn.cursor(start_idx, 1)
 end
 
 -- Quickfix window adjustments and key mappings
 local quickfix_group = vim.api.nvim_create_augroup('quickfix', { clear = true })
-
 vim.api.nvim_create_autocmd('FileType', {
   group = quickfix_group,
   pattern = 'qf',
   callback = function()
-    vim.api.nvim_buf_set_option(0, 'buflisted', false) -- Don't qf in buffer lists.
+    vim.bo.buflisted = false -- Don't list quickfix in buffers.
     vim.keymap.set('n', '<ESC>', '<CMD>cclose<CR>',
-      { buffer = true, remap = false, silent = true })
-    vim.keymap.set('n', 'dd', delete_qf_items, { buffer = true })
-    vim.keymap.set('x', 'd', delete_qf_items, { buffer = true })
+      { buffer = true, silent = true, desc = "Close quickfix window" })
+    vim.keymap.set({ 'n', 'x' }, 'd', delete_qf_items,
+      { buffer = true, silent = true, desc = "Delete item from quickfix" })
   end,
-  desc = 'Quickfix tweaks',
+  desc = 'Quickfix window tweaks',
 })
 
 -- Flash highlight when yanking text
@@ -175,20 +160,20 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 -- Highlight cursor row/column when entering or leaving window
-vim.api.nvim_create_autocmd("WinEnter", {
+vim.api.nvim_create_autocmd({ "WinEnter", "FocusGained" }, {
   pattern = "*",
   callback = function()
     vim.opt.cursorline = true
     vim.opt.cursorcolumn = true
-  end
+  end,
 })
 
-vim.api.nvim_create_autocmd("WinLeave", {
+vim.api.nvim_create_autocmd({ "WinLeave", "FocusLost" }, {
   pattern = "*",
   callback = function()
     vim.opt.cursorline = false
     vim.opt.cursorcolumn = false
-  end
+  end,
 })
 
 -- Clean up terminal gutter on terminal open
@@ -202,10 +187,15 @@ vim.api.nvim_create_autocmd("TermOpen", {
   end,
 })
 
--- Set filetype and spell for Markdown and TeX files
-vim.cmd([[au BufRead,BufNewFile *.md set filetype=markdown]])
-vim.cmd([[au BufRead,BufNewFile *.md set spell]])
-vim.cmd([[au BufRead,BufNewFile *.tex set spell]])
+local ft_group = vim.api.nvim_create_augroup("FileTypeSettings", { clear = true })
+vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
+  group = ft_group,
+  pattern = { "*.md", "*.tex" },
+  callback = function()
+    vim.opt_local.spell = true
+  end,
+  desc = "Enable spell check for Markdown and TeX",
+})
 
 -- Diagnostic configuration
 vim.diagnostic.config {
@@ -218,56 +208,39 @@ vim.api.nvim_create_autocmd({ "CursorHold" }, {
   pattern = "*",
   callback = function()
     vim.diagnostic.open_float(nil, { scope = "cursor", focusable = false })
-  end
-})
-
-vim.diagnostic.config {
-  virtual_text = false,
-  update_in_insert = false,
-  float = { header = false, border = "rounded", focusable = false }
-}
-
-vim.api.nvim_create_autocmd({ "CursorHold" }, {
-  pattern = "*",
-  callback = function()
-    vim.diagnostic.open_float(nil, { scope = "cursor", focusable = false })
-  end
+  end,
 })
 
 -- Define custom layout commands
-vim.api.nvim_create_user_command("DesktopLayout",
-  function()
-    vim.cmd([[vsp]])
-    vim.cmd([[vsp]])
-    vim.cmd([[terminal]])
-    vim.cmd([[sp]])
-    vim.cmd([[terminal]])
-    vim.cmd([[sp]])
-    vim.cmd([[terminal]])
-    vim.cmd([[NvimTreeOpen]])
-    vim.cmd([[wincmd l]])
-    vim.cmd([[vertical resize 100]])
-    vim.cmd([[wincmd l]])
-    vim.cmd([[vertical resize 100]])
-    vim.cmd([[stopinsert]])
-  end,
-  {})
+vim.api.nvim_create_user_command("DesktopLayout", function()
+  vim.cmd([[vsp]])
+  vim.cmd([[vsp]])
+  vim.cmd([[terminal]])
+  vim.cmd([[sp]])
+  vim.cmd([[terminal]])
+  vim.cmd([[sp]])
+  vim.cmd([[terminal]])
+  vim.cmd([[NvimTreeOpen]])
+  vim.cmd([[wincmd l]])
+  vim.cmd([[vertical resize 100]])
+  vim.cmd([[wincmd l]])
+  vim.cmd([[vertical resize 100]])
+  vim.cmd([[stopinsert]])
+end, {})
 
-vim.api.nvim_create_user_command("LaptopLayout",
-  function()
-    vim.cmd([[vsp]])
-    vim.cmd([[terminal]])
-    vim.cmd([[sp]])
-    vim.cmd([[terminal]])
-    vim.cmd([[NvimTreeOpen]])
-    vim.cmd([[wincmd l]])
-    vim.cmd([[vertical resize 100]])
-    vim.cmd([[stopinsert]])
-  end,
-  {})
+vim.api.nvim_create_user_command("LaptopLayout", function()
+  vim.cmd([[vsp]])
+  vim.cmd([[terminal]])
+  vim.cmd([[sp]])
+  vim.cmd([[terminal]])
+  vim.cmd([[NvimTreeOpen]])
+  vim.cmd([[wincmd l]])
+  vim.cmd([[vertical resize 100]])
+  vim.cmd([[stopinsert]])
+end, {})
 
 -- Configure lazy plugin manager
-require "lazy".setup({
+require("lazy").setup({
   spec = { { import = "plugins" } },
   change_detection = { notify = false },
   checker = { enabled = true, notify = false },
