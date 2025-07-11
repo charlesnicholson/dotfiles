@@ -1,9 +1,3 @@
-for _, server in ipairs(require "mason-lspconfig".get_installed_servers()) do
-  local ok, server_opts = pcall(require, "config.lsp.servers." .. server)
-  local opts = ok and server_opts or {}
-  require "lspconfig"[server].setup(opts)
-end
-
 local function on_attach(client, bufnr)
   vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
 
