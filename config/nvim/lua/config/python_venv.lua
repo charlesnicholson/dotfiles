@@ -1,16 +1,16 @@
 local M = {}
 
 local config = {
-  python_cmd = "python3.13",
+  python = "python3.13",
   venv_dir = vim.fn.stdpath("data") .. "/venv",
   version_file = vim.fn.stdpath("data") .. "/venv/venv_version.txt",
-  packages = { "setuptools", "build", "wheel", "pip", "pynvim" },
+  packages = { "setuptools", "build", "wheel", "pynvim" },
 }
 
 config.venv_python = config.venv_dir .. "/bin/python"
 
 local function get_system_python_version()
-  local version_str = vim.fn.system({ config.python_cmd, "--version" })
+  local version_str = vim.fn.system({ config.python, "--version" })
   if vim.v.shell_error == 0 then
     return vim.trim(version_str)
   end
@@ -36,8 +36,8 @@ local function recreate_venv()
   vim.notify(
     "Recreating Python venv. Please wait...", vim.log.levels.INFO, { title = "Venv Setup" })
 
-  vim.fn.system({ "rm", "-rf", config.venv_dir })
-  vim.fn.system({ config.python_cmd, "-m", "venv", config.venv_dir })
+  vim.fn.system(
+    { config.python, "-m", "venv", "--clear", "--upgrade-deps", config.venv_dir })
 
   local version_str = get_system_python_version()
   if version_str then
