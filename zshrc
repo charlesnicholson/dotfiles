@@ -23,9 +23,7 @@ alias gps="git pull && git submodule update --init --recursive"
 alias gs="git status"
 alias gd="git diff"
 
-[[ -f "$HOME/src/fi/github-pat.txt" ]] && export GITHUB_TOKEN=$(<"$HOME/src/fi/github-pat.txt")
-[[ -f "$HOME/src/fi/basic-auth.txt" ]] && export FI_SERVER_AUTH_HEADER=$(<"$HOME/src/fi/basic-auth.txt")
-[[ -f "$HOME/src/fi/openai-key.txt" ]] && export OPENAI_API_KEY=$(<"$HOME/src/fi/openai-key.txt")
+for f in ~/src/fi/keys/*.txt(N); do export "${${f:t}%.txt}"="$(<"$f")"; done
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=23"
