@@ -16,7 +16,10 @@ do
   fi
 done
 
-plugins=(brew fzf git gh gem python screen sublime zsh-autosuggestions zsh-syntax-highlighting)
+zstyle ':omz:update' mode auto
+
+plugins=(autoupdate brew fzf fzf-tab git gh python sublime zsh-autosuggestions zsh-syntax-highlighting)
+
 fpath=(/usr/local/share/zsh-completions $fpath)
 
 alias gps="git pull && git submodule update --init --recursive"
@@ -30,6 +33,7 @@ alias gd="git diff"
 ZSH_THEME="powerlevel10k/powerlevel10k"
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=23"
 ZSH_AUTOSUGGEST_USE_ASYNC=1
+ZSH_CUSTOM_AUTOUPDATE_NUM_WORKERS=8
 
 export FZF_DEFAULT_COMMAND='fd --type file'
 
