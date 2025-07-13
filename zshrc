@@ -1,6 +1,4 @@
 export ZSH="$HOME/.oh-my-zsh"
-export NPM_PACKAGES="$HOME/.npm-packages"
-export NODE_PATH="$NPM_PACKAGES/lib/node_modules${NODE_PATH:+:$NODE_PATH}"
 
 for dir in \
     /bin \
@@ -8,8 +6,7 @@ for dir in \
     /usr/bin \
     /usr/sbin \
     /usr/local/bin \
-    /usr/local/sbin \
-    "$NPM_PACKAGES/bin"
+    /usr/local/sbin
 do
   if [[ -d $dir ]]; then
     path+=("$dir")
@@ -37,14 +34,6 @@ ZSH_CUSTOM_AUTOUPDATE_NUM_WORKERS=8
 
 export FZF_DEFAULT_COMMAND='fd --type file'
 
-export NVM_DIR="$HOME/.nvm"
-if [[ -s "$NVM_DIR/nvm.sh" ]]; then
-  source "$NVM_DIR/nvm.sh"
-fi
-if [[ -s "$NVM_DIR/bash_completion" ]]; then
-  source "$NVM_DIR/bash_completion"
-fi
-
 # Instant prompt (must come before oh-my-zsh.sh)
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
@@ -70,4 +59,7 @@ zstyle :bracketed-paste-magic paste-finish pastefinish
 bindkey -v
 bindkey '^]' vi-cmd-mode
 bindkey -r '^['
+
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
