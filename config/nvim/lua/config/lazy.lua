@@ -18,6 +18,8 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   end
 end
 
+vim.filetype.add({ extension = { rl = 'ragel' } })
+
 vim.g.c_syntax_for_h = 1
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_perl_provider = 0
