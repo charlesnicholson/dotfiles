@@ -1,39 +1,17 @@
--- plantuml_viewer/init.lua
---
--- A 100% Lua, cross-platform Neovim plugin to visualize PlantUML diagrams.
---
--- This single file contains:
--- 1. A PlantUML URL encoder.
--- 2. A complete, asynchronous HTTP and WebSocket server built on Neovim's `vim.loop`.
--- 3. The client-side HTML and JavaScript, embedded as a string.
--- 4. The Neovim autocommand to trigger updates on save.
---
--- No Python, no curl, no external dependencies.
-
--- =============================================================================
--- SECTION: Configuration
--- =============================================================================
 local config = {
   http_port = 8764,
   websocket_port = 8765,
   host = "127.0.0.1",
 }
 
--- =============================================================================
--- SECTION: LuaJIT bitops (required for Neovim)
--- =============================================================================
 local ok, bit = pcall(require, "bit")
 if not ok then
   error("[puml_viewer] Requires LuaJIT 'bit' library.")
 end
+
 local band, bor, bxor, bnot = bit.band, bit.bor, bit.bxor, bit.bnot
 local lshift, rshift, rol, tobit = bit.lshift, bit.rshift, bit.rol, bit.tobit
 
--- =============================================================================
--- SECTION: Utility Functions (Crypto, Base64, and PlantUML Encoding)
--- =============================================================================
-
--- Pure-LuaJIT SHA-1 using bitlib (Lua 5.1 / LuaJIT friendly)
 local sha1
 do
   local function to_be(n)
@@ -46,9 +24,6 @@ do
   end
 
   function sha1(s)
-    -- local debug prints if needed:
-    -- print("--- DEBUG: Input to SHA1 function ---"); print(vim.inspect(s))
-
     local h0, h1, h2, h3, h4 =
       0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0
 
@@ -56,8 +31,6 @@ do
     -- Pad so that (len + 1 + pad_len) % 64 == 56, then append 64-bit len (big-endian)
     local pad_len = (56 - ((len + 1) % 64)) % 64
     s = s .. '\128' .. string.rep('\0', pad_len) .. to_be(0) .. to_be(len * 8)
-
-    -- print("--- DEBUG: Padded SHA1 input ---"); print(vim.inspect(s))
 
     for i = 1, #s, 64 do
       local chunk = s:sub(i, i + 63)
@@ -102,7 +75,6 @@ do
   end
 end
 
--- Pure-Lua Base64 (standard alphabet)
 local b64
 do
   local s = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
@@ -122,7 +94,6 @@ do
   end
 end
 
--- Minimal zlib "deflate" wrapper (stored/raw block) + Adler32
 local zlib = {}
 do
   local function adler32(buf)
@@ -149,7 +120,6 @@ do
   end
 end
 
--- PlantUML's custom 64 alphabet (0-9A-Za-z-_), after zlib deflate
 local function encode64_plantuml(data)
   local b64_chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'
   local result = ''
@@ -169,9 +139,6 @@ local function plantuml_encode(text)
   return encode64_plantuml(zlib.deflate(text))
 end
 
--- =============================================================================
--- SECTION: Embedded HTML/JS Viewer
--- =============================================================================
 local html_content = string.format([[
 <!DOCTYPE html>
 <html lang="en">
@@ -207,9 +174,6 @@ local html_content = string.format([[
 </html>
 ]], config.websocket_port, config.host)
 
--- =============================================================================
--- SECTION: Lua HTTP & WebSocket Server
--- =============================================================================
 local server = {}
 local connected_clients = {}
 
@@ -237,7 +201,6 @@ function server.broadcast(message)
 end
 
 function server.start()
-  -- HTTP server for the viewer page
   local http_server = vim.loop.new_tcp()
   http_server:bind(config.host, config.http_port)
   http_server:listen(128, function(err)
@@ -253,7 +216,6 @@ function server.start()
     end)
   end)
 
-  -- WebSocket server for live updates
   local ws_server = vim.loop.new_tcp()
   ws_server:bind(config.host, config.websocket_port)
   ws_server:listen(128, function(err)
@@ -261,26 +223,15 @@ function server.start()
     local client = vim.loop.new_tcp()
     ws_server:accept(client)
     client:read_start(function(err2, data)
-      if err2 then
-        connected_clients[client] = nil
-        client:close()
-        return
-      end
-      if not data then
+      if err2 or not data then
         connected_clients[client] = nil
         client:close()
         return
       end
 
       vim.schedule(function()
-        -- local debug:
-        -- print("--- DEBUG: Data Received on WebSocket ---")
-        -- print(vim.inspect(data))
-
         local key = data:match("Sec%-WebSocket%-Key: ([%w%+/=]+)")
         if key then
-          -- print("--- DEBUG: Extracted Key ---"); print(key)
-
           local guid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
           local accept_key_sha1 = sha1(key .. guid)
           local accept_key_b64 = b64(accept_key_sha1)
@@ -292,17 +243,12 @@ function server.start()
 
           client:write(response)
           connected_clients[client] = true
-        else
-          -- Not a handshake we understand; ignore for now.
         end
       end)
     end)
   end)
 end
 
--- =============================================================================
--- SECTION: Neovim Integration
--- =============================================================================
 local M = {}
 
 function M.update_diagram()
@@ -311,10 +257,11 @@ function M.update_diagram()
     vim.notify("PlantUML: Buffer is empty, skipping.", vim.log.levels.WARN)
     return
   end
+
   local encoded_diagram = plantuml_encode(buffer_content)
   local plantuml_url = "http://www.plantuml.com/plantuml/png/~1" .. encoded_diagram
   server.broadcast(plantuml_url)
-  vim.notify("PlantUML diagram updated.", vim.log.levels.INFO)
+  vim.print("PlantUML diagram updated.")
 end
 
 function M.setup()
@@ -326,11 +273,6 @@ function M.setup()
     desc = "Update PlantUML diagram via WebSocket",
   })
   server.start()
-  vim.notify(
-    "PlantUML HTTP server running on http://" .. config.host .. ":" .. config.http_port,
-    vim.log.levels.INFO
-  )
-  print("PlantUML Viewer (100% Lua) loaded and configured.")
 end
 
 return M
