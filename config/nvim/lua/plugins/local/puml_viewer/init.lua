@@ -1,4 +1,4 @@
--- plantuml_viewer/init.lua (FFI zlib raw-deflate + PlantUML b64 + rich debug)
+-- plantuml_viewer/init.lua
 
 local config = {
   http_port = 8764,
@@ -6,165 +6,113 @@ local config = {
   host = "127.0.0.1",
 }
 
-local ok, bit = pcall(require, "bit")
-if not ok then
-  error("[puml_viewer] Requires LuaJIT 'bit' library.")
-end
+-- Hard requirements for this version of the plugin
+assert(pcall(require, "ffi"), "[puml_viewer] Requires LuaJIT with FFI.")
+assert(pcall(require, "bit"), "[puml_viewer] Requires LuaJIT 'bit' library.")
+local ffi = require "ffi"
+local bit = require "bit"
 
-local band, bor, bxor = bit.band, bit.bor, bit.bxor
-local lshift, rshift, rol, tobit = bit.lshift, bit.rshift, bit.rol, bit.tobit
-
+-- -----------------------------------------------------------------------------
+-- True ZLIB Compression via FFI ("FFI or Bust")
+-- -----------------------------------------------------------------------------
 local zlib = {}
-do
-  local function adler32(buf)
-    local s1, s2 = 1, 0
-    for i = 1, #buf do
-      s1 = (s1 + buf:byte(i)) % 65521
-      s2 = (s2 + s1) % 65521
-    end
-    return s2 * 65536 + s1
-  end
-  function zlib.deflate(buf)
-    local len = #buf
-    local nlen = 65535 - len
-    local b = string.char(0x78, 0x01) .. string.char(1) ..
-              string.char(len % 256, math.floor(len / 256)) ..
-              string.char(nlen % 256, math.floor(nlen / 256)) .. buf
-    local a32 = adler32(buf)
-    return b .. string.char(
-      math.floor(a32 / 16777216) % 256,
-      math.floor(a32 / 65536) % 256,
-      math.floor(a32 / 256) % 256,
-      a32 % 256
-    )
-  end
-end
+function zlib.deflate(buf)
+  local zlib_name = ffi.os == "Windows" and "zlib1" or "z"
+  local libz = ffi.load(zlib_name) -- This will error if the library is not found
 
--- -----------------------------------------------------------------------------
--- SHA-1 (for WebSocket handshake)
--- -----------------------------------------------------------------------------
-local sha1
-do
-  local function to_be(n)
-    return string.char(
-      band(rshift(n, 24), 0xff),
-      band(rshift(n, 16), 0xff),
-      band(rshift(n, 8), 0xff),
-      band(n, 0xff)
-    )
-  end
+  ffi.cdef[[
+    typedef unsigned long uLong;
+    int compress(unsigned char *dest, uLong *destLen, const unsigned char *source, uLong sourceLen);
+    uLong compressBound(uLong sourceLen);
+  ]]
 
-  function sha1(s)
-    local h0, h1, h2, h3, h4 =
-        0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0
+  local source_len = #buf
+  local dest_len_val = libz.compressBound(source_len)
+  local dest_len = ffi.new("uLong[1]", dest_len_val)
+  local source = ffi.cast("const unsigned char*", buf)
+  local dest = ffi.new("unsigned char[?]", dest_len[0])
 
-    local len = #s
-    local pad_len = (56 - ((len + 1) % 64)) % 64
-    s = s .. '\128' .. string.rep('\0', pad_len) .. to_be(0) .. to_be(len * 8)
-
-    for i = 1, #s, 64 do
-      local chunk = s:sub(i, i + 63)
-      local w = {}
-      for j = 0, 15 do
-        local a = chunk:byte(j * 4 + 1)
-        local b = chunk:byte(j * 4 + 2)
-        local c = chunk:byte(j * 4 + 3)
-        local d = chunk:byte(j * 4 + 4)
-        w[j] = bor(lshift(a, 24), lshift(b, 16), lshift(c, 8), d)
-      end
-      for j = 16, 79 do
-        w[j] = rol(bxor(w[j - 3], w[j - 8], w[j - 14], w[j - 16]), 1)
-      end
-
-      local a, b_, c, d, e = h0, h1, h2, h3, h4
-      for j = 0, 79 do
-        local f, k
-        if j < 20 then
-          f = bor(band(b_, c), band(bit.bnot(b_), d))
-          k = 0x5A827999
-        elseif j < 40 then
-          f = bxor(b_, c, d)
-          k = 0x6ED9EBA1
-        elseif j < 60 then
-          f = bor(band(b_, c), band(b_, d), band(c, d))
-          k = 0x8F1BBCDC
-        else
-          f = bxor(b_, c, d)
-          k = 0xCA62C1D6
-        end
-        local temp = tobit(rol(a, 5) + f + e + w[j] + k)
-        e, d, c, b_, a = d, c, rol(b_, 30), a, temp
-      end
-      h0, h1, h2, h3, h4 = tobit(h0 + a), tobit(h1 + b_), tobit(h2 + c), tobit(h3 + d), tobit(h4 + e)
-    end
-    return to_be(h0) .. to_be(h1) .. to_be(h2) .. to_be(h3) .. to_be(h4)
+  if libz.compress(dest, dest_len, source, source_len) == 0 then
+    -- Success! Return the compressed C buffer as a Lua string
+    return ffi.string(dest, dest_len[0])
+  else
+    error("[puml_viewer] zlib compression failed.")
   end
 end
 
 -- -----------------------------------------------------------------------------
--- Base64 for WebSocket SHA-1
--- -----------------------------------------------------------------------------
-local b64
-do
-  local s = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-  function b64(data)
-    return ((data:gsub('.', function(x)
-      local r, b = '', x:byte()
-      for i = 8, 1, -1 do r = r .. (b % 2 ^ i - b % 2 ^ (i - 1) > 0 and '1' or '0') end
-      return r
-    end) .. '0000'):gsub('(%d%d%d?%d?%d?%d?)', function(x)
-      if (#x < 6) then return '' end
-      local c = 0
-      for i = 1, 6 do c = c + (x:sub(i, i) == '1' and 2 ^ (6 - i) or 0) end
-      return s:sub(c + 1, c + 1)
-    end) .. ({ '', '==', '=' })[#data % 3 + 1])
-  end
-end
-
--- -----------------------------------------------------------------------------
--- PlantUML base64 (custom alphabet, **no '=' padding**)
+-- PlantUML Base64 Encoder
 -- -----------------------------------------------------------------------------
 local function encode64_plantuml(data)
   local map = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_'
   local out = {}
   local i, n = 1, #data
   while i <= n do
-    local c1 = data:byte(i) or 0
-    local c2 = data:byte(i + 1)
-    local c3 = data:byte(i + 2)
+    local c1, c2, c3 = data:byte(i, i + 2)
+    c1 = c1 or 0
+    local b1 = bit.rshift(c1, 2)
     if not c2 then
-      local b1 = rshift(c1, 2)
-      local b2 = band(lshift(c1, 4), 0x3F)
-      out[#out+1] = map:sub(b1+1, b1+1)
-      out[#out+1] = map:sub(b2+1, b2+1)
-      break
-    elseif not c3 then
-      local b1 = rshift(c1, 2)
-      local b2 = band(bor(lshift(band(c1, 0x3), 4), rshift(c2, 4)), 0x3F)
-      local b3 = band(lshift(band(c2, 0xF), 2), 0x3F)
-      out[#out+1] = map:sub(b1+1, b1+1)
-      out[#out+1] = map:sub(b2+1, b2+1)
-      out[#out+1] = map:sub(b3+1, b3+1)
+      local b2 = bit.band(bit.lshift(c1, 4), 0x3F)
+      table.insert(out, map:sub(b1 + 1, b1 + 1))
+      table.insert(out, map:sub(b2 + 1, b2 + 1))
       break
     else
-      local b1 = rshift(c1, 2)
-      local b2 = band(bor(lshift(band(c1, 0x3), 4), rshift(c2, 4)), 0x3F)
-      local b3 = band(bor(lshift(band(c2, 0xF), 2), rshift(c3, 6)), 0x3F)
-      local b4 = band(c3, 0x3F)
-      out[#out+1] = map:sub(b1+1, b1+1)
-      out[#out+1] = map:sub(b2+1, b2+1)
-      out[#out+1] = map:sub(b3+1, b3+1)
-      out[#out+1] = map:sub(b4+1, b4+1)
-      i = i + 3
+      local b2 = bit.band(bit.bor(bit.lshift(bit.band(c1, 0x3), 4), bit.rshift(c2, 4)), 0x3F)
+      if not c3 then
+        local b3 = bit.band(bit.lshift(bit.band(c2, 0xF), 2), 0x3F)
+        table.insert(out, map:sub(b1 + 1, b1 + 1))
+        table.insert(out, map:sub(b2 + 1, b2 + 1))
+        table.insert(out, map:sub(b3 + 1, b3 + 1))
+        break
+      else
+        local b3 = bit.band(bit.bor(bit.lshift(bit.band(c2, 0xF), 2), bit.rshift(c3, 6)), 0x3F)
+        local b4 = bit.band(c3, 0x3F)
+        table.insert(out, map:sub(b1 + 1, b1 + 1))
+        table.insert(out, map:sub(b2 + 1, b2 + 1))
+        table.insert(out, map:sub(b3 + 1, b3 + 1))
+        table.insert(out, map:sub(b4 + 1, b4 + 1))
+        i = i + 3
+      end
     end
   end
   return table.concat(out)
 end
 
--- Build compressed+encoded text and emit strong debug
-local function plantuml_encode(text)
-  local raw = zlib.deflate(text)
-  return encode64_plantuml(raw)
+-- -----------------------------------------------------------------------------
+-- SHA-1 and Base64 for WebSocket Handshake
+-- -----------------------------------------------------------------------------
+local sha1, b64
+do
+  local band, bor, bxor = bit.band, bit.bor, bit.bxor
+  local lshift, rshift, rol, tobit = bit.lshift, bit.rshift, bit.rol, bit.tobit
+  local function to_be(n) return string.char(band(rshift(n,24),255), band(rshift(n,16),255), band(rshift(n,8),255), band(n,255)) end
+  function sha1(s)
+    local h0,h1,h2,h3,h4 = 0x67452301,0xEFCDAB89,0x98BADCFE,0x10325476,0xC3D2E1F0
+    local len = #s
+    s = s .. '\128' .. string.rep('\0', (55 - len) % 64) .. to_be(0) .. to_be(len * 8)
+    for i=1, #s, 64 do
+      local chunk = s:sub(i, i+63)
+      local w = {}
+      for j=0,15 do w[j]=bor(lshift(chunk:byte(j*4+1),24),lshift(chunk:byte(j*4+2),16),lshift(chunk:byte(j*4+3),8),chunk:byte(j*4+4)) end
+      for j=16,79 do w[j] = rol(bxor(w[j-3],w[j-8],w[j-14],w[j-16]), 1) end
+      local a,b,c,d,e=h0,h1,h2,h3,h4
+      for j=0,79 do
+        local f,k
+        if j<20 then f,k=bor(band(b,c),band(bit.bnot(b),d)),0x5A827999
+        elseif j<40 then f,k=bxor(b,c,d),0x6ED9EBA1
+        elseif j<60 then f,k=bor(band(b,c),band(b,d),band(c,d)),0x8F1BBCDC
+        else f,k=bxor(b,c,d),0xCA62C1D6 end
+        local temp=tobit(rol(a,5)+f+e+w[j]+k)
+        e,d,c,b,a=d,c,rol(b,30),a,temp
+      end
+      h0,h1,h2,h3,h4=tobit(h0+a),tobit(h1+b),tobit(h2+c),tobit(h3+d),tobit(h4+e)
+    end
+    return to_be(h0)..to_be(h1)..to_be(h2)..to_be(h3)..to_be(h4)
+  end
+  local map="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  function b64(data)
+    return((data:gsub('.',function(x)local r,b='',x:byte()for i=8,1,-1 do r=r.. (b%2^i-b%2^(i-1)>0 and '1' or '0')end return r end)..'0000'):gsub('(%d%d%d?%d?%d?%d?)',function(x)if(#x<6)then return''end local c=0 for i=1,6 do c=c+(x:sub(i,i)=='1' and 2^(6-i) or 0)end return map:sub(c+1,c+1)end)..({'','==','='})[#data%3+1])
+  end
 end
 
 -- -----------------------------------------------------------------------------
@@ -232,35 +180,30 @@ local html_content = string.format([[
 ]], config.websocket_port, config.host)
 
 -- -----------------------------------------------------------------------------
--- Tiny WS + HTTP
+-- Tiny WS + HTTP Server
 -- -----------------------------------------------------------------------------
 local server = {}
 local connected_clients = {}
 
 local function encode_ws_frame(payload)
   local len = #payload
-  if len <= 125 then
-    return string.char(0x81, len) .. payload
-  elseif len <= 65535 then
-    return string.char(0x81, 126, math.floor(len / 256), len % 256) .. payload
+  if len <= 125 then return string.char(0x81, len) .. payload
+  elseif len <= 65535 then return string.char(0x81, 126, math.floor(len / 256), len % 256) .. payload
   else
-    local b7 = len % 256
-    local b6 = math.floor(len / 256) % 256
-    local b5 = math.floor(len / 65536) % 256
-    local b4 = math.floor(len / 16777216) % 256
+    local b7,b6,b5,b4=len%256,math.floor(len/256)%256,math.floor(len/65536)%256,math.floor(len/16777216)%256
     return string.char(0x81, 127, 0, 0, 0, 0, b4, b5, b6, b7) .. payload
   end
 end
 
 function server.broadcast(tbl)
-  local frame = encode_ws_frame(vim.json.encode({ type = "update", url = tbl.url, filename = tbl.filename }))
+  local frame = encode_ws_frame(vim.json.encode(tbl))
   for client, _ in pairs(connected_clients) do
     if client and not client:is_closing() then client:write(frame) else connected_clients[client] = nil end
   end
 end
 
 function server.start()
-  -- HTTP
+  -- HTTP server for the initial HTML page
   local http_server = vim.loop.new_tcp()
   http_server:bind(config.host, config.http_port)
   http_server:listen(128, function(err)
@@ -269,14 +212,13 @@ function server.start()
     http_server:accept(client)
     client:read_start(function(_, data)
       if data then
-        local response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: "
-          .. #html_content .. "\r\n\r\n" .. html_content
+        local response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: "..#html_content.."\r\n\r\n"..html_content
         client:write(response, function() client:close() end)
       end
     end)
   end)
 
-  -- WebSocket
+  -- WebSocket server for updates
   local ws_server = vim.loop.new_tcp()
   ws_server:bind(config.host, config.websocket_port)
   ws_server:listen(128, function(err)
@@ -290,8 +232,7 @@ function server.start()
         if key then
           local guid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
           local accept_key_b64 = b64(sha1(key .. guid))
-          local response = "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: "
-            .. accept_key_b64 .. "\r\n\r\n"
+          local response = "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: "..accept_key_b64.."\r\n\r\n"
           client:write(response)
           connected_clients[client] = true
         end
@@ -301,7 +242,7 @@ function server.start()
 end
 
 -- -----------------------------------------------------------------------------
--- Neovim integration
+-- Neovim Integration
 -- -----------------------------------------------------------------------------
 local M = {}
 
@@ -309,7 +250,7 @@ function M.update_diagram()
   local buf = 0
   local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
   local buffer_content = table.concat(lines, '\n')
-  if buffer_content == '' then
+  if buffer_content:match("^%s*$") then
     vim.schedule(function() vim.print("PlantUML: buffer empty, skipping.") end)
     return
   end
@@ -317,10 +258,18 @@ function M.update_diagram()
   local filename = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(buf), ":t")
   if filename == "" then filename = "untitled.puml" end
 
-  local encoded = plantuml_encode(buffer_content)
-  local plantuml_url = "http://www.plantuml.com/plantuml/png/~1" .. encoded
+  -- Compress with FFI, encode, and build the URL
+  local compressed_data = zlib.deflate(buffer_content)
+  local encoded_data = encode64_plantuml(compressed_data)
+  local plantuml_url = "http://www.plantuml.com/plantuml/png/~1" .. encoded_data
 
-  server.broadcast({ url = plantuml_url, filename = filename })
+  -- Check if the URL is still too long; warn the user if so.
+  if #plantuml_url > 8000 then -- A conservative limit
+    vim.notify("PlantUML: Resulting URL is very long and may be rejected by the server.", vim.log.levels.WARN)
+  end
+
+  -- **THE FIX IS HERE**: Added type = "update" to the broadcast message
+  server.broadcast({ type = "update", url = plantuml_url, filename = filename })
   vim.schedule(function() vim.print("PlantUML updated: " .. filename) end)
 end
 
@@ -336,4 +285,3 @@ function M.setup()
 end
 
 return M
-
