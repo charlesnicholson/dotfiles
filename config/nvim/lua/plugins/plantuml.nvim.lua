@@ -3,6 +3,6 @@ return {
   lazy = false,
   opts = {
     auto_launch_browser = "always",
-    use_docker = true
+    use_docker = true,
   }
 }
