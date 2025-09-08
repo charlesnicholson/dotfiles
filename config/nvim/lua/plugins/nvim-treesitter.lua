@@ -10,6 +10,7 @@ return {
         "cmake",
         "cpp",
         "dockerfile",
+        "gn",
         "graphql",
         "html",
         "javascript",
