@@ -17,7 +17,7 @@ for _, server in ipairs(require "mason-lspconfig".get_installed_servers()) do
   local ok, server_opts = pcall(require, "config.lsp.servers." .. server)
   local opts = ok and server_opts or {}
   opts.on_attach = on_attach
-  vim.lsp.config(server, opts)
+  require "lspconfig"[server].setup(opts)
 end
 
 vim.lsp.set_log_level("off") -- "debug" or "trace"
