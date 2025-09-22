@@ -1,4 +1,4 @@
--- Set up LspAttach autocmd for keybindings
+-- Set up LspAttach autocmd for keybindings (replaces deprecated on_attach)
 vim.api.nvim_create_autocmd('LspAttach', {
   group = vim.api.nvim_create_augroup('lsp-attach', { clear = true }),
   callback = function(event)
@@ -20,13 +20,12 @@ vim.api.nvim_create_autocmd('LspAttach', {
   end,
 })
 
--- Configure LSP servers using new vim.lsp.config syntax
+-- Set up LSP servers (keeping lspconfig setup but removing deprecated on_attach)
 for _, server in ipairs(require "mason-lspconfig".get_installed_servers()) do
   local ok, server_opts = pcall(require, "config.lsp.servers." .. server)
   local opts = ok and server_opts or {}
-  
-  -- Set up the server using new syntax
-  vim.lsp.config[server] = opts
+  -- Remove on_attach as it's deprecated - now handled by LspAttach autocmd above
+  require "lspconfig"[server].setup(opts)
 end
 
 vim.lsp.set_log_level("off") -- "debug" or "trace"
