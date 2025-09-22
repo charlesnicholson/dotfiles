@@ -7,5 +7,7 @@ return {
   },
 
   filetypes = { "c", "cpp", "objc", "objcpp" },
-  root_dir = require "lspconfig.util".root_pattern(".clangd", ".git"),
+  root_dir = function(fname)
+    return vim.fs.root(fname, { ".clangd", ".git" })
+  end,
 }
