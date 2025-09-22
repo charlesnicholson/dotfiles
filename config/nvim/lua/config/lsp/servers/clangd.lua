@@ -6,6 +6,5 @@ return {
     "--fallback-style=none",
   },
 
-  filetypes = { "c", "cpp", "objc", "objcpp" },
-  root_dir = require "lspconfig.util".root_pattern(".clangd", ".git"),
+  filetypes = { "c", "cpp", "objc", "objcpp" }
 }
