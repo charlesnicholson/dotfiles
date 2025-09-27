@@ -42,7 +42,7 @@ vim.opt.laststatus = 2
 vim.opt.lazyredraw = true
 vim.opt.list = true
 vim.opt.listchars = { tab = "▸ ", trail = "▫" }
-vim.opt.mouse = ""
+vim.opt.mouse = "a"
 vim.opt.number = true
 vim.opt.pumheight = 20
 vim.opt.relativenumber = true
