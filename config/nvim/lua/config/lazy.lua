@@ -28,7 +28,7 @@ vim.g.mapleader = ","
 vim.opt.autoindent = true
 vim.opt.autoread = true
 vim.opt.backspace = { "indent", "eol", "start" }
-vim.opt.clipboard = "unnamed"
+vim.opt.clipboard = vim.fn.has("mac") == 1 and "unnamed" or "unnamedplus"
 vim.opt.completeopt = { "menu", "menuone", "noselect" }
 vim.opt.cursorline = true
 vim.opt.cursorcolumn = true
@@ -39,7 +39,6 @@ vim.opt.ignorecase = true
 vim.opt.inccommand = "nosplit"
 vim.opt.incsearch = true
 vim.opt.laststatus = 2
-vim.opt.lazyredraw = true
 vim.opt.list = true
 vim.opt.listchars = { tab = "▸ ", trail = "▫" }
 vim.opt.mouse = "a"
@@ -97,7 +96,7 @@ vim.keymap.set(
 
 -- Overwrite default paste behavior in visual mode
 vim.keymap.set(
-  "v", "p", "\"_dP\"", { noremap = true, silent = true, desc = "Paste without yanking" })
+  "v", "p", "\"_dP", { noremap = true, silent = true, desc = "Paste without yanking" })
 vim.keymap.set({ "n", "v" }, "x", "\"_x",
   { noremap = true, silent = true, desc = "Delete to black hole register" })
 
@@ -110,42 +109,42 @@ vim.keymap.set("t", "<C-Space>", "<Space>", { silent = true })
 
 -- Delete items from quickfix list
 local function delete_qf_items()
-  local mode = vim.api.nvim_get_mode()['mode']
+  local mode = vim.api.nvim_get_mode()["mode"]
   local start_idx
   local count
 
-  if mode == 'n' then -- Normal mode
-    start_idx = vim.fn.line('.')
+  if mode == "n" then -- Normal mode
+    start_idx = vim.fn.line(".")
     count = vim.v.count > 0 and vim.v.count or 1
   else -- Visual mode
-    local v_start_idx = vim.fn.line('v')
-    local v_end_idx = vim.fn.line('.')
+    local v_start_idx = vim.fn.line("v")
+    local v_end_idx = vim.fn.line(".")
     start_idx = math.min(v_start_idx, v_end_idx)
     count = math.abs(v_end_idx - v_start_idx) + 1
-    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<esc>', true, false, true), 'x', false)
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<esc>", true, false, true), "x", false)
   end
 
   local qflist = vim.fn.getqflist()
   for _ = 1, count, 1 do
     table.remove(qflist, start_idx)
   end
-  vim.fn.setqflist(qflist, 'r')
+  vim.fn.setqflist(qflist, "r")
   vim.fn.cursor(start_idx, 1)
 end
 
 -- Quickfix window adjustments and key mappings
-local quickfix_group = vim.api.nvim_create_augroup('quickfix', { clear = true })
-vim.api.nvim_create_autocmd('FileType', {
+local quickfix_group = vim.api.nvim_create_augroup("quickfix", { clear = true })
+vim.api.nvim_create_autocmd("FileType", {
   group = quickfix_group,
-  pattern = 'qf',
+  pattern = "qf",
   callback = function()
     vim.bo.buflisted = false -- Don't list quickfix in buffers.
-    vim.keymap.set('n', '<ESC>', '<CMD>cclose<CR>',
+    vim.keymap.set("n", "<ESC>", "<CMD>cclose<CR>",
       { buffer = true, silent = true, desc = "Close quickfix window" })
-    vim.keymap.set({ 'n', 'x' }, 'd', delete_qf_items,
+    vim.keymap.set({ "n", "x" }, "d", delete_qf_items,
       { buffer = true, silent = true, desc = "Delete item from quickfix" })
   end,
-  desc = 'Quickfix window tweaks',
+  desc = "Quickfix window tweaks",
 })
 
 -- Flash highlight when yanking text
@@ -181,7 +180,7 @@ vim.api.nvim_create_autocmd("TermOpen", {
     vim.opt_local.number = false
     vim.opt_local.relativenumber = false
     vim.bo.buflisted = false
-    vim.cmd("Gitsigns detach")
+    require("gitsigns").detach()
   end,
 })
 

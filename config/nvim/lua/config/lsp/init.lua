@@ -1,13 +1,13 @@
-local lsp_attach_group = vim.api.nvim_create_augroup('lsp-attach', { clear = true })
+local lsp_attach_group = vim.api.nvim_create_augroup("lsp-attach", { clear = true })
 
-vim.api.nvim_create_autocmd('LspAttach', {
+vim.api.nvim_create_autocmd("LspAttach", {
   group = lsp_attach_group,
 
   callback = function(event)
     local client = vim.lsp.get_client_by_id(event.data.client_id)
     local bufnr = event.buf
 
-    vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
+    vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
 
     local opts = { noremap = true, silent = true, buffer = bufnr }
     vim.keymap.set("n", "<leader>jd", vim.lsp.buf.definition, opts)

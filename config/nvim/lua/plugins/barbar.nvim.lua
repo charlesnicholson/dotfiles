@@ -1,12 +1,6 @@
 return {
   "romgrk/barbar.nvim",
 
-  dependencies = {
-    "tpope/vim-unimpaired",
-    "lewis6991/gitsigns.nvim",
-    "nvim-tree/nvim-web-devicons",
-  },
-
   config = function()
     require "barbar".setup {}
 

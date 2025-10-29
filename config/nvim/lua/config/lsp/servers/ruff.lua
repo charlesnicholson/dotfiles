@@ -1,7 +1,7 @@
 return {
   init_options = {
     settings = {
-      configuration = "~/.config/ruff.toml",
+      configuration = vim.fn.expand("~/.config/ruff.toml"),
     },
   },
 }

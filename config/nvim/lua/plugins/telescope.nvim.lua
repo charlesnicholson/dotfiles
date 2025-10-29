@@ -4,7 +4,9 @@ return {
     branch = "0.1.x",
 
     config = function()
-      require "telescope".setup {
+      local telescope = require "telescope"
+
+      telescope.setup {
         defaults = {
           mappings = { n = { ["<C-[>"] = require "telescope.actions".close, } }
         },
@@ -30,11 +32,11 @@ return {
         }
       }
 
-      require "telescope".load_extension("fzf")
-      require "telescope".load_extension("live_grep_args")
+      telescope.load_extension("fzf")
+      telescope.load_extension("live_grep_args")
 
       vim.keymap.set(
-        'n', '<leader>f', require "telescope.builtin".find_files, { silent = true })
+        "n", "<leader>f", require "telescope.builtin".find_files, { silent = true })
 
       vim.keymap.set("n", "<leader>a",
         function() require "telescope".extensions.live_grep_args.live_grep_args() end,
