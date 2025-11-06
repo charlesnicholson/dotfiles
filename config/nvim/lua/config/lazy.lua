@@ -102,6 +102,7 @@ vim.keymap.set({ "n", "v" }, "x", "\"_x",
 
 -- Terminal mode specific key mappings
 vim.keymap.set("t", "<C-[>", "<C-\\><C-n>", { silent = true })
+vim.keymap.set("t", "<leader><Esc>", "<Esc>", { silent = true, desc = "Send escape to terminal" })
 vim.keymap.set("t", "<S-Backspace>", "<Backspace>", { silent = true })
 vim.keymap.set("t", "<S-Space>", "<Space>", { silent = true })
 vim.keymap.set("t", "<C-Backspace>", "<Backspace>", { silent = true })
