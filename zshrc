@@ -6,7 +6,8 @@ for dir in \
     /usr/bin \
     /usr/sbin \
     /usr/local/bin \
-    /usr/local/sbin
+    /usr/local/sbin \
+    $HOME/.local/bin
 do
   if [[ -d $dir ]]; then
     path+=("$dir")
@@ -68,5 +69,7 @@ bindkey '^]' vi-cmd-mode
 bindkey -r '^['
 
 export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
 
+source "$HOME/Library/Caches/envy/shell/hook.zsh"

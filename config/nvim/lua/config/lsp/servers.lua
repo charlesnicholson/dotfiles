@@ -3,6 +3,7 @@ return {
   "clangd",
   "cmake",
   "dockerls",
+  "gn_language_server",
   "graphql",
   "html",
   "jsonls",
