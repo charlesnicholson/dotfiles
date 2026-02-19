@@ -1,7 +1,19 @@
 local M = {}
 
+local function get_system_python(version)
+  if vim.fn.has("mac") == 1 then
+    for _, prefix in ipairs({ "/opt/homebrew", "/usr/local" }) do
+      local path = prefix .. "/bin/python" .. version
+      if (vim.uv or vim.loop).fs_stat(path) then
+        return path
+      end
+    end
+  end
+  return "/usr/bin/python" .. version
+end
+
 local config = {
-  python = "python3.13",
+  python = get_system_python("3.13"),
   venv_dir = vim.fn.stdpath("data") .. "/venv",
   version_file = vim.fn.stdpath("data") .. "/venv/venv_version.txt",
   packages = { "setuptools", "build", "wheel", "pynvim" },
