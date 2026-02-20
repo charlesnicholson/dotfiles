@@ -45,4 +45,8 @@ export NVM_DIR="$HOME/.nvm"
 [[ -s "/opt/homebrew/opt/nvm/nvm.sh" ]] && source "/opt/homebrew/opt/nvm/nvm.sh"
 [[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ]] && source "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
 
-[[ -f "$HOME/Library/Caches/envy/shell/hook.zsh" ]] && source "$HOME/Library/Caches/envy/shell/hook.zsh"
+case "$(uname)" in
+  Darwin) _envy_hook="$HOME/Library/Caches/envy/shell/hook.zsh" ;;
+  Linux)  _envy_hook="${XDG_CACHE_HOME:-$HOME/.cache}/envy/shell/hook.zsh" ;;
+esac
+[[ -f "$_envy_hook" ]] && source "$_envy_hook"
