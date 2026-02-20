@@ -1,24 +1,15 @@
+# Instant prompt (must be first)
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 export ZSH="$HOME/.oh-my-zsh"
 
-for dir in \
-    /bin \
-    /opt/homebrew/bin \
-    /usr/bin \
-    /usr/sbin \
-    /usr/local/bin \
-    /usr/local/sbin \
-    $HOME/.local/bin
-do
-  if [[ -d $dir ]]; then
-    path+=("$dir")
-  fi
-done
+path=($HOME/.local/bin /opt/homebrew/bin /usr/local/bin /usr/local/sbin $path)
 
 zstyle ':omz:update' mode auto
 
-plugins=(autoupdate brew fzf fzf-tab git gh python sublime zsh-autosuggestions zsh-syntax-highlighting)
-
-fpath=(/usr/local/share/zsh-completions $fpath)
+plugins=(autoupdate brew fzf fzf-tab git gh python zsh-autosuggestions zsh-syntax-highlighting)
 
 alias gps="git pull && git submodule update --init --recursive"
 alias gs="git status"
@@ -28,32 +19,13 @@ for f in ~/src/fi/keys/*.txt(N); do export "${${f:t}%.txt}"="$(<"$f")"; done
 
 ZSH_THEME="powerlevel10k/powerlevel10k"
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=23"
-ZSH_AUTOSUGGEST_USE_ASYNC=1
 ZSH_CUSTOM_AUTOUPDATE_NUM_WORKERS=8
 
 export FZF_DEFAULT_COMMAND='fd --type file'
 
-# Instant prompt (must come before oh-my-zsh.sh)
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 source "$ZSH/oh-my-zsh.sh"
-[[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
 [[ -f ~/.p10k.zsh ]] && source ~/.p10k.zsh
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
-
-pasteinit() {
-  OLD_SELF_INSERT=${${(s.:.)widgets[self-insert]}[2,3]}
-  zle -N self-insert url-quote-magic
-}
-
-pastefinish() {
-  zle -N self-insert $OLD_SELF_INSERT
-}
-
-zstyle :bracketed-paste-magic paste-init pasteinit
-zstyle :bracketed-paste-magic paste-finish pastefinish
 
 zstyle ':completion:*:git-checkout:*' sort false
 zstyle ':completion:*:descriptions' format '[%d]'
@@ -69,8 +41,8 @@ bindkey -v
 bindkey '^]' vi-cmd-mode
 bindkey -r '^['
 
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-  [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-  [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
+export NVM_DIR="$HOME/.nvm"
+[[ -s "/opt/homebrew/opt/nvm/nvm.sh" ]] && source "/opt/homebrew/opt/nvm/nvm.sh"
+[[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ]] && source "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
 
 [[ -f "$HOME/Library/Caches/envy/shell/hook.zsh" ]] && source "$HOME/Library/Caches/envy/shell/hook.zsh"
