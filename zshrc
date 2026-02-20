@@ -73,4 +73,4 @@ export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || pr
   [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
   [ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ] && \. "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
 
-source "$HOME/Library/Caches/envy/shell/hook.zsh"
+[[ -f "$HOME/Library/Caches/envy/shell/hook.zsh" ]] && source "$HOME/Library/Caches/envy/shell/hook.zsh"
