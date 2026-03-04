@@ -46,6 +46,7 @@ export NVM_DIR="$HOME/.nvm"
 [[ -s "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm" ]] && source "/opt/homebrew/opt/nvm/etc/bash_completion.d/nvm"
 
 export ENVY_SHELL_NO_ENTER_EXIT_ANNOUNCE=1
+export AWS_PROFILE=prod-poweruser
 
 case "$(uname)" in
   Darwin) _envy_hook="$HOME/Library/Caches/envy/shell/hook.zsh" ;;
