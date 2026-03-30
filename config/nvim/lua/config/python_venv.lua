@@ -1,19 +1,46 @@
 local M = {}
 
-local function get_system_python(version)
+-- Resolve the system Python at a known absolute path, immune to PATH manipulation.
+local function get_system_python()
   if vim.fn.has("mac") == 1 then
     for _, prefix in ipairs({ "/opt/homebrew", "/usr/local" }) do
-      local path = prefix .. "/bin/python" .. version
-      if (vim.uv or vim.loop).fs_stat(path) then
+      local path = prefix .. "/bin/python3"
+      if vim.uv.fs_stat(path) then
         return path
       end
     end
   end
-  return "/usr/bin/python" .. version
+  return "/usr/bin/python3"
 end
 
+-- Shell hooks (direnv, etc.) prepend project bin/ dirs to PATH that can contain
+-- broken python3 wrapper scripts. Clean VIRTUAL_ENV/CONDA state and ensure the
+-- system Python's directory is first in PATH so Mason always finds the real one.
+local function sanitize_python_env(system_python)
+  if vim.env.VIRTUAL_ENV then
+    vim.env.VIRTUAL_ENV = nil
+    vim.env.PYTHONHOME = nil
+  end
+  if vim.env.CONDA_PREFIX then
+    vim.env.CONDA_PREFIX = nil
+    vim.env.CONDA_DEFAULT_ENV = nil
+  end
+
+  local system_bin = vim.fn.fnamemodify(system_python, ":h")
+  local path_parts = { system_bin }
+  for part in (vim.env.PATH or ""):gmatch("[^:]+") do
+    if part ~= system_bin then
+      table.insert(path_parts, part)
+    end
+  end
+  vim.env.PATH = table.concat(path_parts, ":")
+end
+
+local system_python = get_system_python()
+sanitize_python_env(system_python)
+
 local config = {
-  python = get_system_python("3.13"),
+  python = system_python,
   venv_dir = vim.fn.stdpath("data") .. "/venv",
   version_file = vim.fn.stdpath("data") .. "/venv/venv_version.txt",
   packages = { "setuptools", "build", "wheel", "pynvim" },
@@ -68,7 +95,7 @@ local function recreate_venv()
 end
 
 local function update_packages_background()
-  if not (vim.uv or vim.loop).fs_stat(config.venv_dir .. "/bin/python") then
+  if not vim.uv.fs_stat(config.venv_dir .. "/bin/python") then
     return
   end
 
