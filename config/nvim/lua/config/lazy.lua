@@ -25,32 +25,22 @@ vim.g.loaded_ruby_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.mapleader = ","
 
-vim.opt.autoindent = true
-vim.opt.autoread = true
-vim.opt.backspace = { "indent", "eol", "start" }
 vim.opt.clipboard = vim.fn.has("mac") == 1 and "unnamed" or "unnamedplus"
-vim.opt.completeopt = { "menu", "menuone", "noselect" }
 vim.opt.cursorline = true
 vim.opt.cursorcolumn = true
 vim.opt.expandtab = true
 vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25,r-cr-o:hor20" -- cursor shapes
-vim.opt.hidden = true
 vim.opt.ignorecase = true
 vim.opt.inccommand = "nosplit"
-vim.opt.incsearch = true
-vim.opt.laststatus = 2
 vim.opt.list = true
 vim.opt.listchars = { tab = "▸ ", trail = "▫" }
-vim.opt.mouse = "a"
 vim.opt.number = true
 vim.opt.pumheight = 20
 vim.opt.relativenumber = true
 vim.opt.rtp:prepend(lazypath)
-vim.opt.ruler = true
 vim.opt.scrollback = 100000
 vim.opt.scrolloff = 3
 vim.opt.shortmess:append({ c = true })
-vim.opt.showcmd = true
 vim.opt.signcolumn = "yes"
 vim.opt.smartcase = true
 vim.opt.smartindent = true
@@ -58,12 +48,10 @@ vim.opt.spelllang = "en"
 vim.opt.splitbelow = true
 vim.opt.splitright = true
 vim.opt.swapfile = false
-vim.opt.termguicolors = true
 vim.opt.undofile = true
 vim.opt.updatetime = 300
 vim.opt.visualbell = true
 vim.opt.wildignore = { "node_modules/**", "__pycache__", "*.o", "*.a" }
-vim.opt.wildmenu = true
 vim.opt.wildmode = { "longest", "list", "full" }
 vim.opt.whichwrap:append(
   { ["<"] = true, [">"] = true, h = true, l = true, ["["] = true, ["]"] = true })
@@ -148,29 +136,18 @@ vim.api.nvim_create_autocmd("FileType", {
   desc = "Quickfix window tweaks",
 })
 
--- Flash highlight when yanking text
-vim.api.nvim_create_autocmd("TextYankPost", {
-  desc = "Highlight when yanking text",
-  group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
-  callback = function()
-    vim.highlight.on_yank()
-  end,
-})
-
 -- Highlight cursor row/column when entering or leaving window
 vim.api.nvim_create_autocmd({ "WinEnter", "FocusGained" }, {
-  pattern = "*",
   callback = function()
-    vim.opt.cursorline = true
-    vim.opt.cursorcolumn = true
+    vim.wo.cursorline = true
+    vim.wo.cursorcolumn = true
   end,
 })
 
 vim.api.nvim_create_autocmd({ "WinLeave", "FocusLost" }, {
-  pattern = "*",
   callback = function()
-    vim.opt.cursorline = false
-    vim.opt.cursorcolumn = false
+    vim.wo.cursorline = false
+    vim.wo.cursorcolumn = false
   end,
 })
 
@@ -181,7 +158,8 @@ vim.api.nvim_create_autocmd("TermOpen", {
     vim.opt_local.number = false
     vim.opt_local.relativenumber = false
     vim.bo.buflisted = false
-    require("gitsigns").detach()
+    local ok, gs = pcall(require, "gitsigns")
+    if ok then gs.detach() end
   end,
 })
 
@@ -205,7 +183,7 @@ vim.diagnostic.config {
 vim.api.nvim_create_autocmd({ "CursorHold" }, {
   pattern = "*",
   callback = function()
-    vim.diagnostic.open_float(nil, { scope = "cursor", focusable = false })
+    vim.diagnostic.open_float({ scope = "cursor", focusable = false })
   end,
 })
 

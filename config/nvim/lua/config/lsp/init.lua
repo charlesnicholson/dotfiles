@@ -7,8 +7,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
     local client = vim.lsp.get_client_by_id(event.data.client_id)
     local bufnr = event.buf
 
-    vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
-
     local opts = { noremap = true, silent = true, buffer = bufnr }
     vim.keymap.set("n", "<leader>jd", vim.lsp.buf.definition, opts)
     vim.keymap.set("n", "<leader>rs", vim.lsp.buf.rename, opts)
@@ -19,7 +17,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
     vim.keymap.set("n", "<leader>F", function() vim.lsp.buf.format { async = true } end, opts)
 
     if client and client.name == "clangd" then
-      vim.keymap.set("n", "<leader>t", "<cmd>LspClangdSwitchSourceHeader<CR>", opts)
+      vim.keymap.set("n", "<leader>t", function()
+        local params = { uri = vim.uri_from_bufnr(bufnr) }
+        client:request("textDocument/switchSourceHeader", params, function(err, result)
+          if not err and result then vim.cmd.edit(vim.uri_to_fname(result)) end
+        end)
+      end, opts)
     end
   end,
 })
