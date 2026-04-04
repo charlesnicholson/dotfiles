@@ -2,12 +2,10 @@ return {
   "folke/flash.nvim",
   event = "VeryLazy",
   opts = {
+    jump = { autojump = false },
     modes = {
-      search = {
-        enabled = false,
-        multi_window = false
-      },
-      jump = { autojmp = false },
+      search = { enabled = false },
+      char = { multi_window = false },
     },
   }
 }
