@@ -136,6 +136,15 @@ vim.api.nvim_create_autocmd("FileType", {
   desc = "Quickfix window tweaks",
 })
 
+-- Flash highlight when yanking text
+vim.api.nvim_create_autocmd("TextYankPost", {
+  desc = "Highlight when yanking text",
+  group = vim.api.nvim_create_augroup("highlight-yank", { clear = true }),
+  callback = function()
+    vim.hl.on_yank()
+  end,
+})
+
 -- Highlight cursor row/column when entering or leaving window
 vim.api.nvim_create_autocmd({ "WinEnter", "FocusGained" }, {
   callback = function()
